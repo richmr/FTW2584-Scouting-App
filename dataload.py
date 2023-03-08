@@ -114,7 +114,7 @@ def initPossible_Actions() -> int:
         for action in actionList:
             newaction = Possible_Actions().fromDict(action)
             dbsession.add(newaction)
-        dbsession.commit()
+            dbsession.commit()
     return len(actionList)
 
 def initTeams() -> int:

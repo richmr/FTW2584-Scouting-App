@@ -77,7 +77,7 @@ class Observed_Actions(scoring_base):
 
     rowID: Mapped[int] = mapped_column(primary_key=True)
     matchID: Mapped[int] = mapped_column(ForeignKey("Matches.matchID"))
-    modeID: Mapped[int] = mapped_column(ForeignKey("Game_Modes.modeID"))
+    mode_name: Mapped[int] = mapped_column(ForeignKey("Game_Modes.mode_name"))
     team_number: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"))
     action_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     actionID: Mapped[int] = mapped_column(ForeignKey("Possible_Actions.actionID"))
