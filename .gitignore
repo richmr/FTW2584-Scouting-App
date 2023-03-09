@@ -156,3 +156,5 @@ appsecrets.py
 *.db
 *.log
 scratch/
+experiments.py
+testsql.sql

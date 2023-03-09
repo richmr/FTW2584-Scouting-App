@@ -3,13 +3,15 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlalchemy import func, select, distinct
 
-from typing import Union, List
+from typing import Union, List, Dict
 from enum import Enum
+import traceback
 
 from appsecrets import user_site_key, admin_site_key, all_key, app_mode, sqlAConnectionString
 from appdata import appdata
-from datamodels import Teams
+from datamodels import Teams, Observed_Actions
 
 app = None
 if app_mode == "test":
@@ -152,41 +154,91 @@ class StatSummaryTypes(str, Enum):
     total = "total"
     by_placement = "by_placement"
 
+class SummaryResults(BaseModel):
+    scored_cone = 0
+    scored_cube = 0
+    balanced_charging_station = 0
+    robot_broke = 0
+
+class AverageResults(BaseModel):
+    scored_cone = 0.0
+    scored_cube = 0.0
+    balanced_charging_station = 0.0
+    robot_broke = 0.0
+
+
+class TeamMatchResults(BaseModel):
+    team_number: int
+    team_name: str
+    matches_played: int
+    Auton = SummaryResults()
+    Tele = SummaryResults()
+    total = SummaryResults()
+    avg = AverageResults()
+
+class AllResults(BaseModel):
+    data:List[TeamMatchResults]
+
 # teaminfo(key: ValidKeys, id: Union[List[int]] = Query(default=None)):
 @app.get("/{key}/api/team/results")
-def teamresults(key: ValidKeys, 
-                team_numbers: Union[List[int], None] = Query(default=None),
-                stats_type: StatSummaryTypes = Query(default=None),
-                group_by_mode: bool = False,
-                return_key: Union[str, None] = Query(default=None)
-    ):
+def teamresults(key: ValidKeys) -> AllResults:
     """
-    Returns a variety of responses.
-
-    stats_type = total
-
-    Set return_key to desired value to place it in a dictionary like {return_key: data}
+    Returns dictionary with list of team results behind the "data" key 
     """
-    if key is not ValidKeys.admin:
-        raise HTTPException(status_code=401, detail="Please use admin key to access this API")
-
     with appdata.getSQLSession() as dbsession:
         try:
-            toreturn = []
-            # Find the object
-            team_db = dbsession.query(Teams).filter_by(team_number=team_number).one()
-            # delete it
-            dbsession.delete(team_db)
-            dbsession.commit()
-        except NoResultFound:
-            raise HTTPException(
-                status_code=400, detail=f"No team {team_number} exists")
-        except Exception as badnews:
-            raise HTTPException(status_code=500, detail=f"{badnews}")
+            teamResultsDict = {}
+            allTeams_q = dbsession.query(Teams)
+            team_data_dict = {r.team_number: {"team_name": r.team_name}
+                            for r in allTeams_q}
+            stmt = select(Observed_Actions.team_number, func.count(distinct(
+                Observed_Actions.matchID)).label("matches_played")).group_by(Observed_Actions.team_number)
+            for row in dbsession.execute(stmt):
+                team_data_dict[row.team_number]["matches_played"] = row.matches_played
 
-    if return_key is not None:
-        toreturn = {return_key: toreturn}
-    return toreturn
+            stmt = select(Observed_Actions.team_number,
+                        Observed_Actions.mode_name,
+                        Observed_Actions.action_label,
+                        func.count(Observed_Actions.rowID).label("total")).group_by(Observed_Actions.team_number, Observed_Actions.mode_name, Observed_Actions.action_label)
+            res = dbsession.execute(stmt)
+            for r in res:
+                if r.team_number not in teamResultsDict.keys():
+                    teamResultsDict[r.team_number] = TeamMatchResults(team_number=r.team_number,
+                                                                    team_name=team_data_dict[r.team_number]["team_name"],
+                                                                    matches_played=team_data_dict[r.team_number]["matches_played"])
+                tr = teamResultsDict[r.team_number]
+                m = getattr(tr, r.mode_name, None)
+                # Set by mode
+                if m is not None:
+                    if hasattr(m, r.action_label):
+                        setattr(m, r.action_label, getattr(
+                            m, r.action_label) + r.total)
+
+                # Set by total
+                if hasattr(tr.total, r.action_label):
+                    setattr(tr.total, r.action_label, getattr(
+                        tr.total, r.action_label) + r.total)
+
+                # Add count to avg ( do math later )
+                if hasattr(tr.avg, r.action_label):
+                    setattr(tr.avg, r.action_label, getattr(
+                        tr.avg, r.action_label) + r.total)
+
+            for n, (k, v) in enumerate(teamResultsDict.items()):
+                # Calculate averages
+                if v.matches_played > 0:
+                    for attr in v.avg.__fields__.keys():
+                        setattr(v.avg, attr, round(
+                            getattr(v.avg, attr)/v.matches_played, 1))
+                        
+            return AllResults(data=list(teamResultsDict.values()))
+        except Exception as badnews:
+            detail = f"{badnews}"
+            if app_mode == "test":
+                print(traceback.format_exc())
+            raise HTTPException(status_code=500, detail=detail) 
+                    
+        
 ## Match API
 # Get All Matches
 

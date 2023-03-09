@@ -88,13 +88,79 @@ class TestDataLoad(unittest.TestCase):
                 "matchID":2,
                 "mode_name":"Auton",
                 "team_number":2584,
-                "actionID":4
+                "action_label":"scored_cone"
             },
             {
                 "matchID":2,
                 "mode_name":"Tele",
                 "team_number":2584,
-                "actionID":7
+                "action_label":"scored_cube"
+            },
+            {
+                "matchID": 2,
+                "mode_name": "Tele",
+                "team_number": 2584,
+                "action_label": "scored_cube"
+            },
+            {
+                "matchID": 2,
+                "mode_name": "Tele",
+                "team_number": 2584,
+                "action_label": "balanced_charging_station"
+            },
+            {
+                "matchID": 2,
+                "mode_name": "Tele",
+                "team_number": 6658,
+                "action_label": "robot_broke"
+            },
+            {
+                "matchID": 2,
+                "mode_name": "Tele",
+                "team_number": 8020,
+                "action_label": "scored_cube"
+            },
+            {
+                "matchID": 2,
+                "mode_name": "Tele",
+                "team_number": 8020,
+                "action_label": "scored_cube"
+            },
+            {
+                "matchID": 2,
+                "mode_name": "Tele",
+                "team_number": 8020,
+                "action_label": "scored_cube"
+            },
+            {
+                "matchID": 2,
+                "mode_name": "Tele",
+                "team_number": 8020,
+                "action_label": "scored_cube"
+            },
+            {
+                "matchID": 3,
+                "mode_name": "Auton",
+                "team_number": 2584,
+                "action_label": "scored_cone"
+            },
+            {
+                "matchID": 3,
+                "mode_name": "Tele",
+                "team_number": 2584,
+                "action_label": "scored_cube"
+            },
+            {
+                "matchID": 3,
+                "mode_name": "Tele",
+                "team_number": 2584,
+                "action_label": "scored_cube"
+            },
+            {
+                "matchID": 1,
+                "mode_name": "Tele",
+                "team_number": 2584,
+                "action_label": "balanced_charging_station"
             },
         ]
         with appdata.getSQLSession() as dbsession:
@@ -103,7 +169,7 @@ class TestDataLoad(unittest.TestCase):
             dbsession.commit()
             # What do we have
             res = dbsession.query(Observed_Actions)
-            headers = ["matchID", "mode_name", "team_number", "actionID", "action_timestamp"]
+            headers = ["matchID", "mode_name", "team_number", "action_label", "action_timestamp"]
             datalist = []
             for row in res:
                 thisdata = []
@@ -116,8 +182,8 @@ class TestDataLoad(unittest.TestCase):
     def test_7_team_game_actions(self):
         with appdata.getSQLSession() as dbsession:
             res = dbsession.query(Teams).filter_by(team_number = 2584).one()
-            for item in res.team_game_actions:
-                pprint(item.__dict__)
+            # for item in res.team_game_actions:
+            #     pprint(item.__dict__)
 
         self.assertTrue(True)
 

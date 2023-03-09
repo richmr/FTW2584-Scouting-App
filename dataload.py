@@ -114,6 +114,18 @@ def initPossible_Actions() -> int:
             "applicable_mode": "Any",
             "action_description": "The robot stopped working during match",
         },
+        {
+            "action_label": "scored_cone",
+            "applicable_mode": "Any",
+            "action_description": "Team scored a cone (any position)",
+        },
+        {
+            "action_label": "scored_cube",
+            "applicable_mode": "Any",
+            "action_description": "Team scored a cube (any position)",
+        },
+        
+        
     ]
     with appdata.getSQLSession() as dbsession:
         for action in actionList:
