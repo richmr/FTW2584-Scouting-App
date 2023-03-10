@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -237,8 +237,45 @@ def teamresults(key: ValidKeys) -> AllResults:
             if app_mode == "test":
                 print(traceback.format_exc())
             raise HTTPException(status_code=500, detail=detail) 
-                    
-        
+
+def generate_csv_header_list(in_dict:dict, lead_in="") -> list:
+    toreturn = []
+    if not isinstance(in_dict, dict):
+        return []
+    for n, (key, val) in enumerate(in_dict.items()):
+        if isinstance(val, dict):
+            toreturn += generate_csv_header_list(val, lead_in=f"{lead_in}_{key}")
+        else:
+            toreturn += [f"{lead_in}_{key}"]
+    return toreturn
+
+def generate_csv_line_list_from_dict(in_dict:dict) -> list:
+    toreturn = []
+    for n, (key, val) in enumerate(in_dict.items()):
+        if isinstance(val, dict):
+            toreturn += generate_csv_line_list_from_dict(val)
+        else:
+            toreturn += [val]
+    return toreturn
+
+
+@app.get("/{key}/api/team/resultscsv")
+def resultscsv(key: ValidKeys):
+    try:
+        results = teamresults(key).dict()["data"]
+        if len(results) == 0:
+            return Response(content="", media_type="text/csv")
+        header_list = [str(data) for data in generate_csv_header_list(results[0])]
+        csv_data = ",".join(header_list) + "\n"
+        for entry in results:
+            this_list = [str(data) for data in generate_csv_line_list_from_dict(entry)]
+            csv_data += ",".join(this_list) + "\n"
+        return Response(content=csv_data, media_type="text/csv")
+    except Exception as badnews:
+        if app_mode == "test":
+            print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"{badnews}")
+
 ## Match API
 # Get All Matches
 
