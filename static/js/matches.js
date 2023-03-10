@@ -12,7 +12,7 @@ $(document).ready(function() {
                 contentType: 'application/json',
                 processData: false,
                 data: function ( d ) {
-                        console.log("editor-edit");
+                    // I have to modify the data object delivered by datatables.
                         data_obj = d["data"];
                         var tosend
                         for (const [key, value] of Object.entries(data_obj)) {
@@ -20,7 +20,6 @@ $(document).ready(function() {
                             tosend["matchID"] = key;
                         }
                         final =  JSON.stringify( tosend );
-                        console.log(final)
                         return final
                     },
                 url: modify_match_api,
@@ -29,7 +28,6 @@ $(document).ready(function() {
                 contentType: 'application/json',
                 processData: false,
                 data: function ( d ) {
-                        console.log("editor-create");
                         data_obj = d["data"];
                         var tosend
                         for (const [key, value] of Object.entries(data_obj)) {
@@ -37,7 +35,6 @@ $(document).ready(function() {
                             tosend["matchID"] = key;
                         }
                         final =  JSON.stringify( tosend );
-                        console.log(final)
                         return final
                     },
                 url: add_match_api,
