@@ -11,7 +11,7 @@ from typing import Union, List, Dict
 from enum import Enum
 import traceback
 
-from appsecrets import user_site_key, admin_site_key, all_key, app_mode, sqlAConnectionString
+from appsecrets import user_site_key, admin_site_key, app_mode, sqlAConnectionString
 from appdata import appdata
 from datamodels import Teams, Observed_Actions, Matches
 
@@ -45,9 +45,7 @@ def allteams(key: ValidKeys, return_key: Union[str, None] = Query(default=None))
     with appdata.getSQLSession() as dbsession:
         res = dbsession.query(Teams)
         toreturn = [{"team_number":row.team_number, "team_name":row.team_name} for row in res]
-        if return_key is not None:
-            toreturn = {return_key:toreturn}
-        return toreturn
+        return {"data":[toreturn]}
 
 # Add Team
 class TeamModel(BaseModel):
@@ -83,7 +81,7 @@ def addteam(key: ValidKeys, team_data: TeamModel, return_key: Union[str, None] =
         
     if return_key is not None:
         toreturn = {return_key:toreturn}
-    return toreturn   
+    return {"data":[toreturn]}
 
 # Modify Team
 @app.post("/{key}/api/team/modify")
@@ -115,7 +113,7 @@ def modifyteam(key: ValidKeys, team_data: TeamModel, return_key: Union[str, None
         
     if return_key is not None:
         toreturn = {return_key: toreturn}
-    return toreturn
+    return {"data":[toreturn]}
 
 # Delete Team
 @app.get("/{key}/api/team/delete")
@@ -149,7 +147,7 @@ def deleteteam(key: ValidKeys, team_number: int, return_key: Union[str, None] = 
 
     if return_key is not None:
         toreturn = {return_key: toreturn}
-    return toreturn
+    return {"data":[toreturn]}
 
 # Get Team results
 class StatSummaryTypes(str, Enum):
@@ -308,8 +306,9 @@ def allmatch(key: ValidKeys) -> MatchList:
     except Exception as badnews:
         raise HTTPException(status_code=500, detail=f"{badnews}")
 
-# Get Match Data
 
+
+    
 # Add Match
 @app.post("/{key}/api/match/add")
 def addmatch(key: ValidKeys, match_data:SingleMatchData):
@@ -350,7 +349,7 @@ def modify_match(key: ValidKeys, match_data:SingleMatchData):
         except Exception as badnews:
             raise HTTPException(status_code=500, detail=f"{badnews}")
         
-    return {"data":toreturn}
+    return {"data":[toreturn]}
 
 # Delete Match
 

@@ -158,3 +158,5 @@ appsecrets.py
 scratch/
 experiments.py
 testsql.sql
+static/js/appsecrets.js
+

@@ -320,8 +320,8 @@ pre > code {
   white-space: pre; }
 
 
-/* Tables
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Tables - Disarmed for dataTables
+–––––––––––––––––––––––––––––––––––––––––––––––––– 
 th,
 td {
   padding: 12px 15px;
@@ -333,7 +333,7 @@ td:first-child {
 th:last-child,
 td:last-child {
   padding-right: 0; }
-
+*/
 
 /* Spacing
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
