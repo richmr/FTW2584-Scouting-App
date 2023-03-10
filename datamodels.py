@@ -20,6 +20,13 @@ class scoring_base(DeclarativeBase):
             if hasattr(self, k):
                 setattr(self, k, v)
         return self
+    
+    def toDict(self):
+        toreturn = {}
+        for attr in dir(self):
+            if not attr.startswith("_"):
+                toreturn[attr] = getattr(self, attr)
+        return toreturn
 
 class Teams(scoring_base):
     __tablename__ = "Teams"
@@ -80,6 +87,6 @@ class Observed_Actions(scoring_base):
     mode_name: Mapped[str] = mapped_column(ForeignKey("Game_Modes.mode_name"))
     team_number: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"))
     action_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    action_label: Mapped[int] = mapped_column(ForeignKey("Possible_Actions.actionID"))
+    action_label: Mapped[str] = mapped_column(ForeignKey("Possible_Actions.action_label"))
 
         

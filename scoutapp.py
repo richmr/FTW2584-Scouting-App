@@ -1,3 +1,5 @@
+from datetime import datetime
+import re
 from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -11,7 +13,7 @@ import traceback
 
 from appsecrets import user_site_key, admin_site_key, all_key, app_mode, sqlAConnectionString
 from appdata import appdata
-from datamodels import Teams, Observed_Actions
+from datamodels import Teams, Observed_Actions, Matches
 
 app = None
 if app_mode == "test":
@@ -258,7 +260,6 @@ def generate_csv_line_list_from_dict(in_dict:dict) -> list:
             toreturn += [val]
     return toreturn
 
-
 @app.get("/{key}/api/team/resultscsv")
 def resultscsv(key: ValidKeys):
     try:
@@ -277,19 +278,98 @@ def resultscsv(key: ValidKeys):
         raise HTTPException(status_code=500, detail=f"{badnews}")
 
 ## Match API
+class SingleMatchData(BaseModel):
+    matchID = -1
+    match_name: str
+    red_1: int
+    red_2: int
+    red_3: int
+    blue_1: int
+    blue_2: int
+    blue_3: int
+
+class MatchList(BaseModel):
+    data: List[SingleMatchData]
+
+def cleanString(in_str: str) -> str:
+    """
+    Removes all but letters, numbers, and spaces from a string
+    """
+    out_str = re.sub("[^A-Z\s\d]", "", in_str, 0, re.IGNORECASE)
+    return out_str
+
 # Get All Matches
+@app.get("/{key}/api/match/all")
+def allmatch(key: ValidKeys) -> MatchList:
+    try:
+        with appdata.getSQLSession() as dbsession:
+            res = dbsession.query(Matches)
+            return MatchList(data=[SingleMatchData(**r.toDict()) for r in res])
+    except Exception as badnews:
+        raise HTTPException(status_code=500, detail=f"{badnews}")
 
 # Get Match Data
 
 # Add Match
+@app.post("/{key}/api/match/add")
+def addmatch(key: ValidKeys, match_data:SingleMatchData):
+    if key is not ValidKeys.admin:
+        raise HTTPException(
+            status_code=401, detail="Please use admin key to access this API")
+
+    try:
+        with appdata.getSQLSession() as dbsession:
+            # need to pop out the matchID
+            md = match_data.dict()
+            md.pop("matchID", -1)
+            md["match_name"] = cleanString(md["match_name"])
+            newmatch = Matches().fromDict(md)
+            dbsession.add(newmatch)
+            dbsession.commit()
+            return {"data":[SingleMatchData(**newmatch.toDict())]}
+    except Exception as badnews:
+        raise HTTPException(status_code=500, detail=f"{badnews}")
 
 # Modify Match
+@app.post("/{key}/api/match/modify")
+def modify_match(key: ValidKeys, match_data:SingleMatchData):
+    if key is not ValidKeys.admin:
+        raise HTTPException(
+            status_code=401, detail="Please use admin key to access this API")
+
+    with appdata.getSQLSession() as dbsession:
+        try:
+            toreturn = match_data.dict()
+            # Find the object
+            team_db = dbsession.query(Matches).filter_by(matchID = match_data.matchID).one()
+            # update it
+            team_db.fromDict(toreturn)
+            dbsession.commit()
+        except NoResultFound:
+            raise HTTPException(status_code=400, detail=f"No match {match_data.matchID} exists")
+        except Exception as badnews:
+            raise HTTPException(status_code=500, detail=f"{badnews}")
+        
+    return {"data":toreturn}
 
 # Delete Match
 
 ## Observed Actions
 
 # Add action
+
+class NewObsAction(BaseModel):
+    matchID: int
+    mode_name: str
+    team_number: int
+    action_timestamp: datetime
+    action_label: str
+
+@app.post("/{key}/api/actions/addaction")
+def addaction(key:ValidKeys, action_data: NewObsAction) -> dict:
+    with appdata.getSQLSession() as dbsession:
+        dbsession.add(Observed_Actions().fromDict(action_data.dict()))
+        dbsession.commit()
 
 # Modify action
 
