@@ -366,6 +366,7 @@ class NewObsAction(BaseModel):
 
 @app.post("/{key}/api/actions/addaction")
 def addaction(key:ValidKeys, action_data: NewObsAction) -> dict:
+    # Need logic to prevent multi balances
     with appdata.getSQLSession() as dbsession:
         dbsession.add(Observed_Actions().fromDict(action_data.dict()))
         dbsession.commit()
