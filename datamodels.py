@@ -88,5 +88,6 @@ class Observed_Actions(scoring_base):
     team_number: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"))
     action_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     action_label: Mapped[str] = mapped_column(ForeignKey("Possible_Actions.action_label"))
+    count_seen: Mapped[int] = mapped_column(default=1)
 
         

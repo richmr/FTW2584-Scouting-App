@@ -74,8 +74,8 @@
                 </div>
             </div>
             <div class="row">
-                <div id="set-auton" class="six columns text-center">  
-                    <i class="fa-solid fa-robot fa-4x"></i>
+                <div id="set-auton" class="six columns text-center">
+                    <i id="auton_icon" class="fa-solid fa-robot fa-4x"></i>
                 </div>
                 <div id="set-teleop" class="six columns text-center">
                     <i class="fa-solid fa-gamepad fa-4x"></i>
@@ -87,11 +87,11 @@
                 </div>
             </div>
             <div class="row">
-                <div class="six columns text-center">  
-                    <img id="score-cone" src="../images/cone.png" alt="Cone" width="75" height="75">
+                <div id="score_cone_background" class="six columns text-center">  
+                    <img id="score_cone" src="../images/cone.png" alt="Cone" width="75" height="75">
                 </div>
-                <div class="six columns text-center">
-                    <img id="score-cube" src="../images/cube.png" alt="Cube" width="75" height="75">
+                <div id="score_cube_background" class="six columns text-center">
+                    <img id="score_cube" src="../images/cube.png" alt="Cube" width="75" height="75">
                 </div>
             </div>
             <div class="row">
@@ -117,7 +117,7 @@
                     <h4 id="open-review-submit" class="text-center">Review and Submit (Tap to Open)</h5>
                 </div>
             </div>
-            <div id="review_submit">
+            <div id="review_submit_details" hidden>
                 <div class="row">
                     <div class="six columns text-center">  
                         <h5>Autonomous Cones Scored:</h5>
@@ -126,7 +126,7 @@
                         <i id="add_auton_cone" class="fa-solid fa-circle-plus fa-2x"></i>
                     </div>
                     <div class="two columns text-center">
-                        <h5><div id="auton_cones_scored">3</div></h5>
+                        <h5><div id="Auton_cones_scored">0</div></h5>
                     </div>
                     <div class="two columns text-left">
                         <i id="remove_auton_cone" class="fa-solid fa-circle-minus fa-2x"></i>
@@ -140,7 +140,7 @@
                         <i id="add_auton_cube" class="fa-solid fa-circle-plus fa-2x"></i>
                     </div>
                     <div class="two columns text-center">
-                        <h5><div id="auton_cubes_scored">3</div></h5>
+                        <h5><div id="Auton_cubes_scored">0</div></h5>
                     </div>
                     <div class="two columns text-left">
                         <i id="remove_auton_cube" class="fa-solid fa-circle-minus fa-2x"></i>
@@ -151,7 +151,7 @@
                         <h5>Autonomous Charge Station Balance:</h5>
                     </div>
                     <div class="six columns text-center">
-                        <button id="auton_charge_balance" class="button">No</button>
+                        <button id="Auton_charge_balance" class="button">No</button>
                     </div>
                 </div>
                 <div class="row">
@@ -162,7 +162,7 @@
                         <i id="add_teleop_cone" class="fa-solid fa-circle-plus fa-2x"></i>
                     </div>
                     <div class="two columns text-center">
-                        <h5><div id="Teleop_cones_scored">3</div></h5>
+                        <h5><div id="Teleop_cones_scored">0</div></h5>
                     </div>
                     <div class="two columns text-left">
                         <i id="remove_teleop_cone" class="fa-solid fa-circle-minus fa-2x"></i>
@@ -176,7 +176,7 @@
                         <i id="add_teleop_cube" class="fa-solid fa-circle-plus fa-2x"></i>
                     </div>
                     <div class="two columns text-center">
-                        <h5><div id="Teleop_cubes_scored">3</div></h5>
+                        <h5><div id="Teleop_cubes_scored">0</div></h5>
                     </div>
                     <div class="two columns text-left">
                         <i id="remove_teleop_cube" class="fa-solid fa-circle-minus fa-2x"></i>
@@ -187,7 +187,7 @@
                         <h5>Teleop Charge Station Balance:</h5>
                     </div>
                     <div class="six columns text-center">
-                        <button id="teleop_charge_balance" class="button-green">Yes</button>
+                        <button id="Teleop_charge_balance" >No</button>
                     </div>
                 </div>
                 <div class="row">
@@ -195,7 +195,7 @@
                         <h5>Robot Broke:</h5>
                     </div>
                     <div class="six columns text-center">
-                        <button id="robot_broke_button" class="button-red">Yes</button>
+                        <button id="robot_broke_button" >No</button>
                     </div>
                 </div>
                 <div class="row">

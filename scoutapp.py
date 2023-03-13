@@ -199,7 +199,7 @@ def teamresults(key: ValidKeys) -> AllResults:
             stmt = select(Observed_Actions.team_number,
                         Observed_Actions.mode_name,
                         Observed_Actions.action_label,
-                        func.count(Observed_Actions.rowID).label("total")).group_by(Observed_Actions.team_number, Observed_Actions.mode_name, Observed_Actions.action_label)
+                        func.sum(Observed_Actions.count_seen).label("total")).group_by(Observed_Actions.team_number, Observed_Actions.mode_name, Observed_Actions.action_label)
             res = dbsession.execute(stmt)
             for r in res:
                 if r.team_number not in teamResultsDict.keys():

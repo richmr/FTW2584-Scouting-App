@@ -88,20 +88,22 @@ class TestDataLoad(unittest.TestCase):
                 "matchID":2,
                 "mode_name":"Auton",
                 "team_number":2584,
-                "action_label":"scored_cone"
+                "action_label":"scored_cone",
+                "count_seen": 1
             },
             {
                 "matchID":2,
                 "mode_name":"Tele",
                 "team_number":2584,
-                "action_label":"scored_cube"
+                "action_label":"scored_cube",
+                "count_seen":2
             },
-            {
-                "matchID": 2,
-                "mode_name": "Tele",
-                "team_number": 2584,
-                "action_label": "scored_cube"
-            },
+            # {
+            #     "matchID": 2,
+            #     "mode_name": "Tele",
+            #     "team_number": 2584,
+            #     "action_label": "scored_cube"
+            # },
             {
                 "matchID": 2,
                 "mode_name": "Tele",
@@ -118,26 +120,27 @@ class TestDataLoad(unittest.TestCase):
                 "matchID": 2,
                 "mode_name": "Tele",
                 "team_number": 8020,
-                "action_label": "scored_cube"
+                "action_label": "scored_cube",
+                "count_seen":4
             },
-            {
-                "matchID": 2,
-                "mode_name": "Tele",
-                "team_number": 8020,
-                "action_label": "scored_cube"
-            },
-            {
-                "matchID": 2,
-                "mode_name": "Tele",
-                "team_number": 8020,
-                "action_label": "scored_cube"
-            },
-            {
-                "matchID": 2,
-                "mode_name": "Tele",
-                "team_number": 8020,
-                "action_label": "scored_cube"
-            },
+            # {
+            #     "matchID": 2,
+            #     "mode_name": "Tele",
+            #     "team_number": 8020,
+            #     "action_label": "scored_cube"
+            # },
+            # {
+            #     "matchID": 2,
+            #     "mode_name": "Tele",
+            #     "team_number": 8020,
+            #     "action_label": "scored_cube"
+            # },
+            # {
+            #     "matchID": 2,
+            #     "mode_name": "Tele",
+            #     "team_number": 8020,
+            #     "action_label": "scored_cube"
+            # },
             {
                 "matchID": 3,
                 "mode_name": "Auton",
@@ -148,14 +151,15 @@ class TestDataLoad(unittest.TestCase):
                 "matchID": 3,
                 "mode_name": "Tele",
                 "team_number": 2584,
-                "action_label": "scored_cube"
+                "action_label": "scored_cube",
+                "count_seen": 2
             },
-            {
-                "matchID": 3,
-                "mode_name": "Tele",
-                "team_number": 2584,
-                "action_label": "scored_cube"
-            },
+            # {
+            #     "matchID": 3,
+            #     "mode_name": "Tele",
+            #     "team_number": 2584,
+            #     "action_label": "scored_cube"
+            # },
             {
                 "matchID": 1,
                 "mode_name": "Tele",
