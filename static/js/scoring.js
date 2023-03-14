@@ -1,11 +1,15 @@
 var all_matches_api = `/${user_site_key}/api/match/all`
+var addmanyactions_api = `/${user_site_key}/api/actions/addmanyactions`
+var addmanyactions_api_bad = `/${user_site_key}/api/actions/addmanyactions_bad`
+
 // var all_matches_api = `/wrong/api/match/all`
 
 var match_dictionary = {};
 var chosen_match;
 var chosen_team;
 var current_mode;
-
+var posted_data_str;
+var scoring_data;
 
 function openErrorModal(message) {
     $("#error-message").text(message);
@@ -284,18 +288,114 @@ function setupRobotBrokeButton() {
     });
 }
 
-
 // submit scoring
+function setupSubmitButton() {
+    $("#submit_scoring").click(function (e) {
+        // Disarm the button
+        $("#submit_scoring").click(false);
+        // Send it
+        network_submit();
+    });
+
+}
+
+function textToCount(text_in) {
+    // Converts a "Yes" or "yes" to a int 1
+    // otherwise returns 0
+    if (text_in.toUpperCase() == "YES") {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+function network_submit() {
+    // Build the scoring messages
+    list_of_scores_to_convert = [
+        {
+            "selector":"#Auton_cones_scored",
+            "action_label":"scored_cone",
+            "mode_name":"Auton",
+            "count_conversion":parseInt,
+        },
+        {
+            "selector":"#Auton_cubes_scored",
+            "action_label":"scored_cube",
+            "mode_name":"Auton",
+            "count_conversion":parseInt,
+        },
+        {
+            "selector":"#Auton_charge_balance",
+            "action_label":"balanced_charging_station",
+            "mode_name":"Auton",
+            "count_conversion":textToCount,
+        },
+        {
+            "selector":"#Teleop_cones_scored",
+            "action_label":"scored_cone",
+            "mode_name":"Tele",
+            "count_conversion":parseInt,
+        },
+        {
+            "selector":"#Teleop_cubes_scored",
+            "action_label":"scored_cube",
+            "mode_name":"Tele",
+            "count_conversion":parseInt,
+        },
+        {
+            "selector":"#Teleop_charge_balance",
+            "action_label":"balanced_charging_station",
+            "mode_name":"Tele",
+            "count_conversion":textToCount,
+        },
+        {
+            "selector":"#robot_broke_button",
+            "action_label":"robot_broke",
+            "mode_name":"Tele",
+            "count_conversion":textToCount
+        }
+    ];
+    scoring_data_to_send = []
+    list_of_scores_to_convert.forEach((score_fmt, index, array) => {
+        this_score_data = {
+            matchID:chosen_match,
+            team_number:chosen_team,
+            action_label:score_fmt.action_label,
+            mode_name:score_fmt.mode_name,
+            count_seen: score_fmt.count_conversion($(score_fmt.selector).text())
+        };
+        scoring_data_to_send.push(this_score_data);
+    });
+    $("#sending_data_modal").modal();
+    posted_data_str = JSON.stringify(scoring_data_to_send)
+    $.ajax({
+        type: "POST",
+        url: addmanyactions_api_bad,
+        data: posted_data_str,
+        dataType: "json",
+        contentType: 'application/json',
+        success: function (response) {
+            $("#sending_data_modal_title").text('Success!');
+            $("#submit_message").text("Data saved to central database.");
+            // Reset values?  Reload page? 
+        },
+        error: qr_code_results
+    });
+}
+
+function qr_code_results(jqXHR, textStatus, errorThrown) {
+    $("#sending_data_modal_title").text('Error');
+    $("#submit_message").text("I could not save the data to the central DB because: "+jqXHR.responseJSON.detail);
+    link = `${window.location.origin}${addmanyactions_api}?action_obj=${posted_data_str}`
+    console.log(link)
+    new QRCode(document.getElementById("results_qr_code"), link);
+    // $("#results_qr_code").html(link)
+    $("#results_qr_code").toggle();
+}
+
 
 $(document).ready(function() {
-    // $( "#error-modal").dialog({
-    //     modal: true,
-    //     buttons: {
-    //     Ok: function() {
-    //         $( this ).dialog( "close" );
-    //     }
-    //     }
-    // });
+    
 
     // Setups
     setUpMatchSelector();
@@ -313,6 +413,7 @@ $(document).ready(function() {
     setupTeleopCube_mod();
     setupTeleopChargeButton();
     setupRobotBrokeButton();
+    setupSubmitButton();
 
     loadMatchList();
 

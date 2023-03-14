@@ -1,7 +1,9 @@
 from datetime import datetime
+import json
 import re
 from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from sqlalchemy.exc import IntegrityError, NoResultFound
@@ -361,8 +363,12 @@ class NewObsAction(BaseModel):
     matchID: int
     mode_name: str
     team_number: int
-    action_timestamp: datetime
+    #action_timestamp: datetime
     action_label: str
+    count_seen: int
+
+# class ObsActions(BaseModel):
+#     actions: List[NewObsAction]
 
 @app.post("/{key}/api/actions/addaction")
 def addaction(key:ValidKeys, action_data: NewObsAction) -> dict:
@@ -370,6 +376,57 @@ def addaction(key:ValidKeys, action_data: NewObsAction) -> dict:
     with appdata.getSQLSession() as dbsession:
         dbsession.add(Observed_Actions().fromDict(action_data.dict()))
         dbsession.commit()
+
+@app.get("/{key}/api/actions/addmanyactions")
+def addmanyactions_get(key:ValidKeys, action_obj: str):
+    """
+    action_obj is expected to be a query parameter that is the stringified json object intended for the post
+    Exists to allow for QR code style data submits
+    """
+    data_recvd = json.loads(action_obj)
+    success = addmanyactions(key, data_recvd)
+    # If we get here it must have been successful
+    team_number = data_recvd[0]["team_number"]
+    response = f"""
+    <html>
+        <head>
+            <title>Data received</title>
+        </head>
+        <body>
+            <h3>Match data for team {team_number} received</h3>
+        </body>
+    </html>
+    """
+    return HTMLResponse(content=response, status_code=200)
+
+@app.post("/{key}/api/actions/addmanyactions")
+def addmanyactions(key:ValidKeys, actions: List[NewObsAction]):
+    with appdata.getSQLSession() as dbsession:
+        try:
+            # Check for this team and match already submitted.
+            tested_for_integrity = False
+            for action in actions:
+                # Check for this team and match already submitted.
+                if not isinstance(action, dict):
+                    action = action.dict()
+                if not tested_for_integrity:
+                    matchID = action["matchID"]
+                    team_number = action["team_number"]
+                    exist_count = dbsession.query(Observed_Actions).filter_by(matchID = matchID, team_number = team_number).count()
+                    print("exist count", exist_count)
+                    if exist_count > 0:
+                        raise HTTPException(status_code=400, detail=f"Match data for team {team_number} already submitted for this match")
+                    tested_for_integrity = True            
+                dbsession.add(Observed_Actions().fromDict(action))
+            dbsession.commit()
+            return {}
+        except HTTPException as http_badnews:
+            raise http_badnews
+        except Exception as badnews:
+            if app_mode == "test":
+                print(traceback.format_exc())
+            raise HTTPException(status_code=500, detail=f"{badnews}")
+    
 
 # Modify action
 
