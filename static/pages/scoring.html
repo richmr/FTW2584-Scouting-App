@@ -9,7 +9,8 @@
 
   <!-- Mobile Specific Metas
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+
 
   <!-- FONT
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -100,10 +101,10 @@
                 </div>
             </div>
             <div class="row">
-                <div class="six columns text-center">
+                <div id="charge-balanced-background" class="six columns text-center">
                     <button id="charge-balanced" class="button-primary">Balanced Charging Station</button>
                 </div>
-                <div class="six columns text-center">
+                <div id="robot-broke-background" class="six columns text-center">
                     <button id="robot-broke" class="button-primary">Robot Broke</button>
                 </div>
             </div>
@@ -122,13 +123,13 @@
                     <div class="six columns text-center">  
                         <h5>Autonomous Cones Scored:</h5>
                     </div>
-                    <div class="two columns text-right">
+                    <div class="two columns text-center">
                         <i id="add_auton_cone" class="fa-solid fa-circle-plus fa-2x"></i>
                     </div>
                     <div class="two columns text-center">
                         <h5><div id="Auton_cones_scored">0</div></h5>
                     </div>
-                    <div class="two columns text-left">
+                    <div class="two columns text-center">
                         <i id="remove_auton_cone" class="fa-solid fa-circle-minus fa-2x"></i>
                     </div>
                 </div>
@@ -136,13 +137,13 @@
                     <div class="six columns text-center">  
                         <h5>Autonomous Cubes Scored:</h5>
                     </div>
-                    <div class="two columns text-right">
+                    <div class="two columns text-center">
                         <i id="add_auton_cube" class="fa-solid fa-circle-plus fa-2x"></i>
                     </div>
                     <div class="two columns text-center">
                         <h5><div id="Auton_cubes_scored">0</div></h5>
                     </div>
-                    <div class="two columns text-left">
+                    <div class="two columns text-center">
                         <i id="remove_auton_cube" class="fa-solid fa-circle-minus fa-2x"></i>
                     </div>
                 </div>
@@ -158,13 +159,13 @@
                     <div class="six columns text-center">  
                         <h5>Teleop Cones Scored:</h5>
                     </div>
-                    <div class="two columns text-right">
+                    <div class="two columns text-center">
                         <i id="add_teleop_cone" class="fa-solid fa-circle-plus fa-2x"></i>
                     </div>
                     <div class="two columns text-center">
                         <h5><div id="Teleop_cones_scored">0</div></h5>
                     </div>
-                    <div class="two columns text-left">
+                    <div class="two columns text-center">
                         <i id="remove_teleop_cone" class="fa-solid fa-circle-minus fa-2x"></i>
                     </div>
                 </div>
@@ -172,13 +173,13 @@
                     <div class="six columns text-center">  
                         <h5>Teleop Cubes Scored:</h5>
                     </div>
-                    <div class="two columns text-right">
+                    <div class="two columns text-center">
                         <i id="add_teleop_cube" class="fa-solid fa-circle-plus fa-2x"></i>
                     </div>
                     <div class="two columns text-center">
                         <h5><div id="Teleop_cubes_scored">0</div></h5>
                     </div>
-                    <div class="two columns text-left">
+                    <div class="two columns text-center">
                         <i id="remove_teleop_cube" class="fa-solid fa-circle-minus fa-2x"></i>
                     </div>
                 </div>
@@ -200,7 +201,7 @@
                 </div>
                 <div class="row">
                     <div class="twelve columns text-center">  
-                        <button id="submit_scoring" class="button-orange">Submit!</button>
+                        <button id="submit_scoring" class="button-orange btn-big">Submit!</button>
                     </div>
                 </div>
             </div>
@@ -215,8 +216,10 @@
     <div id="sending_data_modal" class="modal">
         <h3 id="sending_data_modal_title">Submitting data..</h3>
         <p id="submit_message">Sending data, please wait..</p>
-        <br>Please show this QR code to a network connected device.
-        <div id="results_qr_code" class="u-full-width" hidden></div>
+        <div id="results_qr_code" class="u-full-width" hidden>
+            <br>Please show this QR code to a network connected device.<br>
+            <div id="actual_qr_code"></div>
+        </div>
     </div>
 
     <script src="../js/appsecrets.js"></script>

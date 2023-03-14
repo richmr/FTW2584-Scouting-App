@@ -3,7 +3,7 @@ from tabulate import tabulate
 from pprint import pprint
 import os
 
-from dataload import initGame_Modes, initPossible_Actions, initTeams
+from dataload import initGame_Modes, initPossible_Actions, initTeams, initMatches
 from appdata import appdata
 from datamodels import Game_Modes, Possible_Actions, Teams, Matches, Observed_Actions
 
@@ -45,42 +45,10 @@ class TestDataLoad(unittest.TestCase):
             self.assertEqual(team_count, 44)
 
     def test_5_match(self):
-        matches = [
-            {
-                "match_name":"Practice 1",
-                "red_1": 207,
-                "red_2": 294,
-                "red_3": 597,
-                "blue_1": 606,
-                "blue_2": 687,
-                "blue_3": 702,
-            },
-            {
-                "match_name":"Qual 1",
-                "red_1": 2584,
-                "red_2": 2710,
-                "red_3": 3408,
-                "blue_1": 3473,
-                "blue_2": 3863,
-                "blue_3": 3952,
-            },
-            {
-                "match_name":"Playoffs 1",
-                "red_1": 9172,
-                "red_2": 8898,
-                "red_3": 8600,
-                "blue_1": 8020,
-                "blue_2": 7611,
-                "blue_3": 7230,
-            },
-        ]
+        loaded_matches = initMatches()
         with appdata.getSQLSession() as dbsession:
-            # load em
-            for match in matches:
-                dbsession.add(Matches().fromDict(match))
-            dbsession.commit()
             total = dbsession.query(Matches).count()
-            self.assertEqual(total, len(matches))
+            self.assertEqual(total, loaded_matches)
 
     def test_6_actions(self):
         obs_action = [

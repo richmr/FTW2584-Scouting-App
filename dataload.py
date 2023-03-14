@@ -1,6 +1,6 @@
 
 from appdata import appdata
-from datamodels import Game_Modes, Possible_Actions, Teams
+from datamodels import Game_Modes, Possible_Actions, Teams, Matches
 
 
 def initGame_Modes() -> int:
@@ -124,6 +124,11 @@ def initPossible_Actions() -> int:
             "applicable_mode": "Any",
             "action_description": "Team scored a cube (any position)",
         },
+        {
+            "action_label": "team_competed",
+            "applicable_mode": "Any",
+            "action_description": "Team was part of this match",
+        },
         
         
     ]
@@ -190,3 +195,46 @@ def initTeams() -> int:
             dbsession.add(newteam)
         dbsession.commit()
     return len(teamList)
+
+def initMatches() -> int:
+    matches = [
+            {
+                "match_name":"Test 1",
+                "red_1": 207,
+                "red_2": 294,
+                "red_3": 597,
+                "blue_1": 606,
+                "blue_2": 687,
+                "blue_3": 702,
+            },
+            {
+                "match_name":"Test 2",
+                "red_1": 2584,
+                "red_2": 2710,
+                "red_3": 3408,
+                "blue_1": 3473,
+                "blue_2": 3863,
+                "blue_3": 3952,
+            },
+            {
+                "match_name":"Test 3",
+                "red_1": 9172,
+                "red_2": 8898,
+                "red_3": 8600,
+                "blue_1": 8020,
+                "blue_2": 7611,
+                "blue_3": 7230,
+            },
+            {
+                "match_name":"No team",
+                
+            },
+        ]
+    with appdata.getSQLSession() as dbsession:
+        # load em
+        for match in matches:
+            dbsession.add(Matches().fromDict(match))
+        dbsession.commit()
+        total = dbsession.query(Matches).count()
+        return total
+        

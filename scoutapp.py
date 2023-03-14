@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+from pprint import pprint
 import re
 from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.staticfiles import StaticFiles
@@ -47,7 +48,7 @@ def allteams(key: ValidKeys, return_key: Union[str, None] = Query(default=None))
     with appdata.getSQLSession() as dbsession:
         res = dbsession.query(Teams)
         toreturn = [{"team_number":row.team_number, "team_name":row.team_name} for row in res]
-        return {"data":[toreturn]}
+        return {"data":toreturn}
 
 # Add Team
 class TeamModel(BaseModel):
@@ -370,6 +371,16 @@ class NewObsAction(BaseModel):
 # class ObsActions(BaseModel):
 #     actions: List[NewObsAction]
 
+class SmallObsActions(BaseModel):
+    mode_name: str
+    action_label: str
+    count_seen: int
+
+class ScoredActions(BaseModel):
+    matchID: int
+    team_number: int
+    scored_items: List[SmallObsActions]
+
 @app.post("/{key}/api/actions/addaction")
 def addaction(key:ValidKeys, action_data: NewObsAction) -> dict:
     # Need logic to prevent multi balances
@@ -384,9 +395,14 @@ def addmanyactions_get(key:ValidKeys, action_obj: str):
     Exists to allow for QR code style data submits
     """
     data_recvd = json.loads(action_obj)
-    success = addmanyactions(key, data_recvd)
+    # pprint(data_recvd)
+    # scored_items = [SmallObsActions(**i) for i in data_recvd["scored_items"]]
+    # data_recvd["scored_items"] = scored_items
+    # pprint(data_recvd)
+    actions = ScoredActions(**data_recvd)
+    success = addmanyactions(key, actions)
     # If we get here it must have been successful
-    team_number = data_recvd[0]["team_number"]
+    team_number = data_recvd["team_number"]
     response = f"""
     <html>
         <head>
@@ -400,24 +416,16 @@ def addmanyactions_get(key:ValidKeys, action_obj: str):
     return HTMLResponse(content=response, status_code=200)
 
 @app.post("/{key}/api/actions/addmanyactions")
-def addmanyactions(key:ValidKeys, actions: List[NewObsAction]):
+def addmanyactions(key:ValidKeys, actions: ScoredActions):
     with appdata.getSQLSession() as dbsession:
         try:
             # Check for this team and match already submitted.
-            tested_for_integrity = False
-            for action in actions:
+            exist_count = dbsession.query(Observed_Actions).filter_by(matchID = actions.matchID, team_number = actions.team_number).count()
+            if exist_count > 0:
+                raise HTTPException(status_code=400, detail=f"Match data for team {actions.team_number} already submitted for this match")
+            for action in actions.scored_items:
                 # Check for this team and match already submitted.
-                if not isinstance(action, dict):
-                    action = action.dict()
-                if not tested_for_integrity:
-                    matchID = action["matchID"]
-                    team_number = action["team_number"]
-                    exist_count = dbsession.query(Observed_Actions).filter_by(matchID = matchID, team_number = team_number).count()
-                    print("exist count", exist_count)
-                    if exist_count > 0:
-                        raise HTTPException(status_code=400, detail=f"Match data for team {team_number} already submitted for this match")
-                    tested_for_integrity = True            
-                dbsession.add(Observed_Actions().fromDict(action))
+                dbsession.add(Observed_Actions(matchID=actions.matchID, team_number=actions.team_number).fromDict(action.dict()))
             dbsession.commit()
             return {}
         except HTTPException as http_badnews:

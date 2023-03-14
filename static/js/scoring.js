@@ -1,4 +1,5 @@
 var all_matches_api = `/${user_site_key}/api/match/all`
+var all_teams_api = `/${user_site_key}/api/team/allteams`
 var addmanyactions_api = `/${user_site_key}/api/actions/addmanyactions`
 var addmanyactions_api_bad = `/${user_site_key}/api/actions/addmanyactions_bad`
 
@@ -10,10 +11,19 @@ var chosen_team;
 var current_mode;
 var posted_data_str;
 var scoring_data;
+var all_teams;
 
 function openErrorModal(message) {
     $("#error-message").text(message);
     $("#error-modal").modal();
+}
+
+function greenFeedback(selector) {
+    // Flash green and then white
+    $(selector).addClass("lgreen-background");
+        setTimeout(() => {
+            $(selector).removeClass("lgreen-background");
+          }, 100);
 }
 
 function setUpMatchSelector(){
@@ -26,6 +36,16 @@ function setUpMatchSelector(){
             $("#team_number_selector").empty();
             $("#team_number_selector").append(`<option value=-1>Please chose your team</option>`);
             for (const [key, value] of Object.entries(match_dictionary[chosen_match])) {
+                if (value == -1) {
+                    // We don't know what teams were scheduled, empty an replace all
+                    $("#team_number_selector").empty();
+                    $("#team_number_selector").append(`<option value=-1>Please chose your team</option>`);
+                    all_teams.forEach((aTeam_number, index, array) => {
+                        $("#team_number_selector").append(`<option value=${aTeam_number}>${aTeam_number}</option>`);
+                    });
+                    // Quit processing
+                    break;
+                }
                 if (key.startsWith("red") || key.startsWith("blue")) {
                     option_text = `${value} (${key.replace("_", " ")})`;
                     $("#team_number_selector").append(`<option value=${value}>${option_text}</option>`);
@@ -50,7 +70,9 @@ function setupTeamSelector() {
 
 function setupReviewAndSubmit() {
     $("#open-review-submit").click(function () {
+        greenFeedback("#open-review-submit")
         $("#review_submit_details").toggle();
+        $("#submit_scoring").get(0).scrollIntoView();
     })
 }
 
@@ -63,7 +85,7 @@ function loadMatchList() {
         success: function (response) {
             // Change the placeholder
             $("#matchID_selector").empty();
-            $("#matchID_selector").append(`<option value=-1>Please chose your match</option>`);
+            $("#matchID_selector").append(`<option value=-1>Please choose your match</option>`);
             // Convert the list to a dictionary
             response["data"].forEach((aMatch, index, array) => {
                 matchID = aMatch["matchID"]
@@ -78,6 +100,24 @@ function loadMatchList() {
             openErrorModal(message);
         }
 
+    });
+}
+
+function loadAllTeams() {
+    all_teams = [];
+    $.ajax({
+        type: "GET",
+        url: all_teams_api,
+        dataType: "json",
+        success: function (response) {
+            response["data"].forEach((aTeam, index, array) => {
+                all_teams.push(aTeam["team_number"]);                                  
+            });
+        },
+        error: function( jqXHR, textStatus, errorThrown ) {
+            message = `loadAllTeams failed because ${errorThrown}`;
+            openErrorModal(message);
+        }
     });
 }
 
@@ -108,10 +148,8 @@ function setupConeScore() {
         current_score += 1;
         // console.log(`setting score for ${current_mode} to ${current_score}`);
         $(scoreID).text(current_score);
-        $("#score_cone_background").addClass("lgreen-background");
-        setTimeout(() => {
-            $("#score_cone_background").removeClass("lgreen-background");
-          }, 100);
+        greenFeedback("#score_cone_background");
+       
     });
 }
 // score cube
@@ -124,10 +162,8 @@ function setupCubeScore() {
         current_score += 1;
         // console.log(`setting score for ${current_mode} to ${current_score}`);
         $(scoreID).text(current_score);
-        $("#score_cube_background").addClass("lgreen-background");
-        setTimeout(() => {
-            $("#score_cube_background").removeClass("lgreen-background");
-          }, 100);
+        greenFeedback("#score_cube_background");
+        
     });
 }
 
@@ -135,6 +171,7 @@ function setupCubeScore() {
 function setupBalanceButton_scoring() {
     $("#charge-balanced").click(function (e) {
         $(`#${current_mode}_charge_balance`).text("Yes").addClass("button-green");
+        greenFeedback("#charge-balanced-background")
       })
 }
 
@@ -142,6 +179,7 @@ function setupBalanceButton_scoring() {
 function setupBrokeButton_scoring() {
     $("#robot-broke").click(function (e) {
         $(`#robot_broke_button`).text("Yes").addClass("button-red");
+        greenFeedback("#robot-broke-background")
       })
 }
 ///////  Review and submit
@@ -355,22 +393,32 @@ function network_submit() {
             "count_conversion":textToCount
         }
     ];
-    scoring_data_to_send = []
+    scoring_data = {
+        matchID:chosen_match,
+        team_number:chosen_team,
+        // Put the team competed in here
+        scored_items:[{
+            action_label:"team_competed",
+            mode_name:"Tele",
+            count_seen:1
+        }]
+    }
     list_of_scores_to_convert.forEach((score_fmt, index, array) => {
-        this_score_data = {
-            matchID:chosen_match,
-            team_number:chosen_team,
-            action_label:score_fmt.action_label,
-            mode_name:score_fmt.mode_name,
-            count_seen: score_fmt.count_conversion($(score_fmt.selector).text())
-        };
-        scoring_data_to_send.push(this_score_data);
+        count_seen = score_fmt.count_conversion($(score_fmt.selector).text())
+        if (count_seen > 0) {
+            this_score_data = {
+                action_label:score_fmt.action_label,
+                mode_name:score_fmt.mode_name,
+                count_seen:count_seen
+            }
+            scoring_data.scored_items.push(this_score_data);
+        }
     });
     $("#sending_data_modal").modal();
-    posted_data_str = JSON.stringify(scoring_data_to_send)
+    posted_data_str = JSON.stringify(scoring_data)
     $.ajax({
         type: "POST",
-        url: addmanyactions_api_bad,
+        url: addmanyactions_api,
         data: posted_data_str,
         dataType: "json",
         contentType: 'application/json',
@@ -379,18 +427,26 @@ function network_submit() {
             $("#submit_message").text("Data saved to central database.");
             // Reset values?  Reload page? 
         },
-        error: qr_code_results
+        error: qr_code_results,
+        timeout: 5000 
     });
 }
 
 function qr_code_results(jqXHR, textStatus, errorThrown) {
     $("#sending_data_modal_title").text('Error');
-    $("#submit_message").text("I could not save the data to the central DB because: "+jqXHR.responseJSON.detail);
+    if (jqXHR === undefined) {
+        $("#submit_message").text("I could not save the data to the central DB");
+    } else if (jqXHR.responseJSON === undefined) {
+        $("#submit_message").text("I could not save the data to the central DB");
+    } else {
+        $("#submit_message").text("I could not save the data to the central DB because: "+jqXHR.responseJSON.detail);
+    }
     link = `${window.location.origin}${addmanyactions_api}?action_obj=${posted_data_str}`
     console.log(link)
-    new QRCode(document.getElementById("results_qr_code"), link);
+    $("#actual_qr_code").empty()
+    new QRCode(document.getElementById("actual_qr_code"), link);
     // $("#results_qr_code").html(link)
-    $("#results_qr_code").toggle();
+    $("#results_qr_code").show();
 }
 
 
@@ -416,6 +472,7 @@ $(document).ready(function() {
     setupSubmitButton();
 
     loadMatchList();
+    loadAllTeams();
 
     
 })

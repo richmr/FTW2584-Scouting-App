@@ -72,12 +72,12 @@ class Matches(scoring_base):
 
     matchID: Mapped[int] = mapped_column(primary_key=True)
     match_name: Mapped[str]
-    red_1: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"))
-    red_2: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"))
-    red_3: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"))
-    blue_1: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"))
-    blue_2: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"))
-    blue_3: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"))
+    red_1: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"), default=-1)
+    red_2: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"), default=-1)
+    red_3: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"), default=-1)
+    blue_1: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"), default=-1)
+    blue_2: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"), default=-1)
+    blue_3: Mapped[int] = mapped_column(ForeignKey("Teams.team_number"), default=-1)
 
 class Observed_Actions(scoring_base):
     __tablename__ = "Observed_Actions"
