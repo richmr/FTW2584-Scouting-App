@@ -26,84 +26,85 @@ def initPossible_Actions() -> int:
     returns the count of loaded actions
     """
     actionList = [
-        {
-            "action_label":"took_position_1",
-            "applicable_mode":"Setup",
-            "count_limit":1,
-            "action_description":"Robot was setup in position 1",
-        },
-        {
-            "action_label":"took_position_2",
-            "applicable_mode":"Setup",
-            "count_limit":1,
-            "action_description":"Robot was setup in position 2",
-        },
-        {
-            "action_label":"took_position_3",
-            "applicable_mode":"Setup",
-            "count_limit":1,
-            "action_description":"Robot was setup in position 3",
-        },
-        {
-            "action_label":"scored_cone_top",
-            "applicable_mode":"Any",
-            "action_description":"Team scored a cone in a top position",
-        },
-        {
-            "action_label":"scored_cone_middle",
-            "applicable_mode":"Any",
-            "action_description":"Team scored a cone in a middle position",
-        },
-        {
-            "action_label":"scored_cone_hybrid",
-            "applicable_mode":"Any",
-            "action_description":"Team scored a cone in a hybrid position",
-        },
-        {
-            "action_label":"scored_cube_top",
-            "applicable_mode":"Any",
-            "action_description":"Team scored a cube in a top position",
-        },
-        {
-            "action_label":"scored_cone_middle",
-            "applicable_mode":"Any",
-            "action_description":"Team scored a cone in a middle position",
-        },
-        {
-            "action_label":"scored_cone_hybrid",
-            "applicable_mode":"Any",
-            "action_description":"Team scored a cone in a hybrid position",
-        },
-        {
-            "action_label":"dropped_cone",
-            "applicable_mode":"Any",
-            "action_description":"Team dropped a held cone",
-        },
-        {
-            "action_label":"dropped_cube",
-            "applicable_mode":"Any",
-            "action_description":"Team dropped a held cube",
-        },
-        {
-            "action_label":"picked_up_cone_ground",
-            "applicable_mode":"Any",
-            "action_description":"Team picked a cone up off the ground",
-        },
-        {
-            "action_label":"picked_up_cube_ground",
-            "applicable_mode":"Any",
-            "action_description":"Team picked a cube up off the ground",
-        },
-        {
-            "action_label":"picked_up_cone_loading",
-            "applicable_mode":"Any",
-            "action_description":"Team picked up a cone from the loading zone",
-        },
-        {
-            "action_label":"entered_charging_station",
-            "applicable_mode":"Any",
-            "action_description":"Team drove onto charging station",
-        },
+        # Big ideas here..  didn't get them implemented..
+        # {
+        #     "action_label":"took_position_1",
+        #     "applicable_mode":"Setup",
+        #     "count_limit":1,
+        #     "action_description":"Robot was setup in position 1",
+        # },
+        # {
+        #     "action_label":"took_position_2",
+        #     "applicable_mode":"Setup",
+        #     "count_limit":1,
+        #     "action_description":"Robot was setup in position 2",
+        # },
+        # {
+        #     "action_label":"took_position_3",
+        #     "applicable_mode":"Setup",
+        #     "count_limit":1,
+        #     "action_description":"Robot was setup in position 3",
+        # },
+        # {
+        #     "action_label":"scored_cone_top",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team scored a cone in a top position",
+        # },
+        # {
+        #     "action_label":"scored_cone_middle",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team scored a cone in a middle position",
+        # },
+        # {
+        #     "action_label":"scored_cone_hybrid",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team scored a cone in a hybrid position",
+        # },
+        # {
+        #     "action_label":"scored_cube_top",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team scored a cube in a top position",
+        # },
+        # {
+        #     "action_label":"scored_cone_middle",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team scored a cone in a middle position",
+        # },
+        # {
+        #     "action_label":"scored_cone_hybrid",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team scored a cone in a hybrid position",
+        # },
+        # {
+        #     "action_label":"dropped_cone",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team dropped a held cone",
+        # },
+        # {
+        #     "action_label":"dropped_cube",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team dropped a held cube",
+        # },
+        # {
+        #     "action_label":"picked_up_cone_ground",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team picked a cone up off the ground",
+        # },
+        # {
+        #     "action_label":"picked_up_cube_ground",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team picked a cube up off the ground",
+        # },
+        # {
+        #     "action_label":"picked_up_cone_loading",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team picked up a cone from the loading zone",
+        # },
+        # {
+        #     "action_label":"entered_charging_station",
+        #     "applicable_mode":"Any",
+        #     "action_description":"Team drove onto charging station",
+        # },
         {
             "action_label":"balanced_charging_station",
             "applicable_mode":"Any",
@@ -224,12 +225,11 @@ def initMatches() -> int:
                 "blue_1": 8020,
                 "blue_2": 7611,
                 "blue_3": 7230,
-            },
-            {
-                "match_name":"No team",
-                
-            },
-        ]
+            }
+    ]
+    practiceMatches = [{"match_name":f"Practice {i}"} for i in range(50)]
+    matches += practiceMatches
+            
     with appdata.getSQLSession() as dbsession:
         # load em
         for match in matches:
