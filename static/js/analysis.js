@@ -68,6 +68,7 @@ $(document).ready(function() {
     //     ]
     // } );
     content = $('#Results').DataTable( {
+        pageLength:50,
         order: [[3, "desc"]],
         dom: "Bfrtip",
         ajax: {

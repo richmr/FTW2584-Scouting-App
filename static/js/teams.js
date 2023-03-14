@@ -1,6 +1,6 @@
-var all_matches_api = `/${user_site_key}/api/match/all`
-var add_match_api = `/${admin_site_key}/api/match/add`
-var modify_match_api = `/${admin_site_key}/api/match/modify`
+var all_teams_api = `/${user_site_key}/api/team/allteams`
+var add_team_api = `/${admin_site_key}/api/team/addteam`
+var modify_team_api = `/${admin_site_key}/api/team/modify`
 
 var editor; // use a global for the submit and return data rendering in the examples
  
@@ -17,12 +17,12 @@ $(document).ready(function() {
                         var tosend
                         for (const [key, value] of Object.entries(data_obj)) {
                             tosend = value;
-                            tosend["matchID"] = key;
+                            tosend["team_number"] = key;
                         }
                         final =  JSON.stringify( tosend );
                         return final
                     },
-                url: modify_match_api,
+                url: modify_team_api,
             },
             create: {
                 contentType: 'application/json',
@@ -32,62 +32,41 @@ $(document).ready(function() {
                         var tosend
                         for (const [key, value] of Object.entries(data_obj)) {
                             tosend = value;
-                            tosend["matchID"] = key;
+                            tosend["team_number"] = key;
                         }
                         final =  JSON.stringify( tosend );
                         return final
                     },
-                url: add_match_api,
+                url: add_team_api,
             }, 
         },
-        idSrc: "matchID",
-        table: "#Matches",
+        idSrc: "team_number",
+        table: "#Teams",
         fields: [ {
-                            label: "Match name:",
-                            name: "match_name"
+                            label: "Team Number:",
+                            name: "team_number"
                     }, {
-                            label: "Red 1:",
-                            name: "red_1"
-                    }, {
-                            label: "Red 2:",
-                            name: "red_2"
-                    }, {
-                            label: "Red 3:",
-                            name: "red_3"
-                    }, {
-                            label: "Blue 1:",
-                            name: "blue_1"
-                    }, {
-                            label: "Blue 2:",
-                            name: "blue_2",
-                    }, {
-                            label: "Blue 3:",
-                            name: "blue_3"
+                            label: "Team Name:",
+                            name: "team_name"
                     }
         ]
     } );
-    $('#Matches').DataTable( {
+    $('#Teams').DataTable( {
             pageLength:50,
             dom: "Bfrtip",
             ajax: {
                 contentType: 'application/json',
                 processData: false,
                 data: function ( d ) {
-                            console.log("datatable")
                             change =  JSON.stringify( d );
-                            console.log(change)
                             return change
                         },
-                    url: all_matches_api,
+                    url: all_teams_api,
                 },
             columns: [
-                        { data: "match_name" },
-                        { data: "red_1" },
-                        { data: "red_2" },
-                        { data: "red_3" },
-                        { data: "blue_1" },
-                        { data: "blue_2" },
-                        { data: "blue_3" },
+                        { data: "team_number" },
+                        { data: "team_name" },
+                        
             ],
             select: true,
             buttons: [
