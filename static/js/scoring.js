@@ -414,7 +414,12 @@ function network_submit() {
             scoring_data.scored_items.push(this_score_data);
         }
     });
-    $("#sending_data_modal").modal();
+    $("#sending_data_modal").modal({
+        escapeClose: false,
+        clickClose: false,
+        showClose: false
+    });
+
     posted_data_str = JSON.stringify(scoring_data)
     $.ajax({
         type: "POST",
@@ -425,6 +430,7 @@ function network_submit() {
         success: function (response) {
             $("#sending_data_modal_title").text('Success!');
             $("#submit_message").text("Data saved to central database.");
+            $("#data_modal_buttons").show();
             // Reset values?  Reload page? 
         },
         error: qr_code_results,
@@ -449,6 +455,37 @@ function qr_code_results(jqXHR, textStatus, errorThrown) {
     $("#results_qr_code").show();
 }
 
+function setupModalCloseButton() {
+    $("#close_modal_next_match").click(function (e) { 
+        // Reset data
+        chosen_match = null;
+        chosen_team = null;
+        current_mode = null;
+        posted_data_str = null;
+        scoring_data = null;
+        // Reset the tabulated scoring data
+        $("#Auton_cones_scored").text(0);
+        $("#Auton_cubes_scored").text(0);
+        $("#Auton_charge_balance").text("No").removeClass("button-green");
+        $("#Teleop_cones_scored").text(0);
+        $("#Teleop_cubes_scored").text(0);
+        $("#Teleop_charge_balance").text("No").removeClass("button-green");
+        $("#robot_broke_button").text("No").removeClass("button-red");
+        // Hide things
+        $("#review_submit_details").hide();
+        $("#review_and_submit").hide();
+        $("#scoring_controls").hide();
+        $("#pick_team_row").hide();
+        //Reset selectors
+        $("#matchID_selector").val(-1);
+        $("#team_number_selector").val(-1);
+        // reset game mode
+        $("#set-auton").click();
+
+        // close it
+        $.modal.close();
+    });
+}
 
 $(document).ready(function() {
     
@@ -470,6 +507,8 @@ $(document).ready(function() {
     setupTeleopChargeButton();
     setupRobotBrokeButton();
     setupSubmitButton();
+
+    setupModalCloseButton();
 
     loadMatchList();
     loadAllTeams();

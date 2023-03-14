@@ -160,3 +160,7 @@ experiments.py
 testsql.sql
 static/js/appsecrets.js
 
+static/pages/test.html
+.DS_Store
+static/.DS_Store
+.DS_Store

@@ -29,7 +29,7 @@
   <script src="https://kit.fontawesome.com/9a97c74805.js" crossorigin="anonymous"></script>
   <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <!-- <link rel="icon" type="image/png" href="../../dist/images/favicon.png"> -->
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
 
   <!-- jQuery Modal -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
@@ -218,7 +218,11 @@
         <p id="submit_message">Sending data, please wait..</p>
         <div id="results_qr_code" class="u-full-width" hidden>
             <br>Please show this QR code to a network connected device.<br>
-            <div id="actual_qr_code"></div>
+            <div id="actual_qr_code" class="text-center"></div>
+        </div>
+        <div id="data_modal_buttons" hidden>
+            <div id="qr_code_text" hidden>DO NOT PUSH BUTTON UNLESS QR CODE HAS BEEN USED</div>
+            <a id="close_modal_next_match" class="button button-orange" href="#" >Reset Data and Score Next Match</a>
         </div>
     </div>
 
