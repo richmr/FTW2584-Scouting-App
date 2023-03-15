@@ -423,7 +423,7 @@ function network_submit() {
     posted_data_str = JSON.stringify(scoring_data)
     $.ajax({
         type: "POST",
-        url: addmanyactions_api_bad,
+        url: addmanyactions_api,
         data: posted_data_str,
         dataType: "json",
         contentType: 'application/json',
