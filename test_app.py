@@ -6,13 +6,13 @@ import os
 from dataload import initGame_Modes, initPossible_Actions, initTeams, initMatches
 from appdata import appdata
 from datamodels import Game_Modes, Possible_Actions, Teams, Matches, Observed_Actions
-
+from appsecrets import sqlAConnectionString
 
 class TestDataLoad(unittest.TestCase):
 
     def setUp(self):
         # Setup the database 
-        appdata('sqlite:///testdata.db')
+        appdata(sqlAConnectionString)
 
     def test_1_game_modes(self):
         # first load them
