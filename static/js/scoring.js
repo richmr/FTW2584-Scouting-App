@@ -423,7 +423,7 @@ function network_submit() {
     posted_data_str = JSON.stringify(scoring_data)
     $.ajax({
         type: "POST",
-        url: addmanyactions_api,
+        url: addmanyactions_api_bad,
         data: posted_data_str,
         dataType: "json",
         contentType: 'application/json',
@@ -447,12 +447,18 @@ function qr_code_results(jqXHR, textStatus, errorThrown) {
     } else {
         $("#submit_message").text("I could not save the data to the central DB because: "+jqXHR.responseJSON.detail);
     }
-    link = `${window.location.origin}${addmanyactions_api}?action_obj=${posted_data_str}`
+    query_string = `${scoring_data.matchID}|${scoring_data.team_number}`
+    scoring_data.scored_items.forEach(e => {
+        query_string += `|${e.action_label}|${e.mode_name}|${e.count_seen}`        
+    });
+    link = `${window.location.origin}${addmanyactions_api}?action_obj=${query_string}`
     console.log(link)
     $("#actual_qr_code").empty()
     new QRCode(document.getElementById("actual_qr_code"), link);
     // $("#results_qr_code").html(link)
     $("#results_qr_code").show();
+    $("#data_modal_buttons").show();
+    $("#qr_code_text").show();
 }
 
 function setupModalCloseButton() {
@@ -476,6 +482,9 @@ function setupModalCloseButton() {
         $("#review_and_submit").hide();
         $("#scoring_controls").hide();
         $("#pick_team_row").hide();
+        $("#results_qr_code").hide();
+        $("#data_modal_buttons").hide();
+        $("#qr_code_text").hide();
         //Reset selectors
         $("#matchID_selector").val(-1);
         $("#team_number_selector").val(-1);

@@ -39,3 +39,10 @@ button.btn-big {
     font-size: 2em;
     vertical-align: middle;
 }
+
+.qr_code_padding {
+    padding-top: 15px;
+    padding-right: 20px;
+    padding-bottom: 15px;
+    padding-left: 20px;
+}

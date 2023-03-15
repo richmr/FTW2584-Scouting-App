@@ -391,25 +391,38 @@ def addaction(key:ValidKeys, action_data: NewObsAction) -> dict:
 @app.get("/{key}/api/actions/addmanyactions")
 def addmanyactions_get(key:ValidKeys, action_obj: str):
     """
-    action_obj is expected to be a query parameter that is the stringified json object intended for the post
+    action_obj is a string like:
+    match_id|team_number|action_label|mode|count_seen...
+    ex: 1|606|team_competed|Tele|1|robot_broke|Tele|1
+
     Exists to allow for QR code style data submits
     """
-    data_recvd = json.loads(action_obj)
-    # pprint(data_recvd)
-    # scored_items = [SmallObsActions(**i) for i in data_recvd["scored_items"]]
-    # data_recvd["scored_items"] = scored_items
-    # pprint(data_recvd)
-    actions = ScoredActions(**data_recvd)
+    data_recvd = action_obj.split("|")
+    matchID = int(data_recvd[0])
+    team_number = int(data_recvd[1])
+    scored_items = []
+    for index in range(2,len(data_recvd),3):
+        scored_items.append(
+            SmallObsActions(
+                mode_name=data_recvd[index],
+                action_label=data_recvd[index+1],
+                count_seen=data_recvd[index+2]
+            )
+        )
+    actions = ScoredActions(
+        matchID=matchID,
+        team_number=team_number,
+        scored_items=scored_items
+    )
     success = addmanyactions(key, actions)
     # If we get here it must have been successful
-    team_number = data_recvd["team_number"]
     response = f"""
     <html>
         <head>
             <title>Data received</title>
         </head>
         <body>
-            <h3>Match data for team {team_number} received</h3>
+            <h2>Match data for team {team_number} received</h2>
         </body>
     </html>
     """
