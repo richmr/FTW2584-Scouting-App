@@ -3,3 +3,4 @@
 
 var admin_site_key = "foo"; 
 var user_site_key = "bar";
+var static_key = "foobar";

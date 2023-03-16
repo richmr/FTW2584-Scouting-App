@@ -14,7 +14,7 @@ from typing import Union, List, Dict
 from enum import Enum
 import traceback
 
-from appsecrets import user_site_key, admin_site_key, app_mode, sqlAConnectionString
+from appsecrets import user_site_key, admin_site_key, app_mode, sqlAConnectionString, static_key
 from appdata import appdata
 from datamodels import Teams, Observed_Actions, Matches
 
@@ -24,7 +24,7 @@ if app_mode == "test":
 else:
     app = FastAPI(openapi_url=None)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount(f"/{static_key}/static", StaticFiles(directory="static"), name="static")
 
 class ValidKeys(str, Enum):
     user = user_site_key

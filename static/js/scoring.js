@@ -440,12 +440,17 @@ function network_submit() {
 
 function qr_code_results(jqXHR, textStatus, errorThrown) {
     $("#sending_data_modal_title").text('Error');
+    alreadySubmitted = false;
     if (jqXHR === undefined) {
         $("#submit_message").text("I could not save the data to the central DB");
     } else if (jqXHR.responseJSON === undefined) {
         $("#submit_message").text("I could not save the data to the central DB");
     } else {
         $("#submit_message").text("I could not save the data to the central DB because: "+jqXHR.responseJSON.detail);
+        if (jqXHR.responseJSON.detail.search("already submitted for this match") > -1) {
+            // Then we don't show a QR code
+            alreadySubmitted = true;
+        }
     }
     query_string = `${scoring_data.matchID}|${scoring_data.team_number}`
     scoring_data.scored_items.forEach(e => {
@@ -453,12 +458,15 @@ function qr_code_results(jqXHR, textStatus, errorThrown) {
     });
     link = `${window.location.origin}${addmanyactions_api}?action_obj=${query_string}`
     console.log(link)
-    $("#actual_qr_code").empty()
-    new QRCode(document.getElementById("actual_qr_code"), link);
-    // $("#results_qr_code").html(link)
-    $("#results_qr_code").show();
+    if (!alreadySubmitted) {
+        $("#actual_qr_code").empty()
+        new QRCode(document.getElementById("actual_qr_code"), link);
+        // $("#results_qr_code").html(link)
+        $("#results_qr_code").show();
+        $("#qr_code_text").show();
+    }
     $("#data_modal_buttons").show();
-    $("#qr_code_text").show();
+
 }
 
 function setupModalCloseButton() {
