@@ -4,6 +4,7 @@ var team_results_api = `/${user_site_key}/api/team/results`
 
 var editor; // use a global for the submit and return data rendering in the examples
 var content;
+var curr_preference = 1;
 
 $(document).ready(function() {
     content = $('#Results').DataTable( {
@@ -16,6 +17,9 @@ $(document).ready(function() {
             },
         responsive: true,
         columns: [
+            {
+                data: "preference",
+            },
             { 
                 data: null,
                 className: "dt-center pick-as-fave",
@@ -74,6 +78,12 @@ $(document).ready(function() {
 
     $('#Results tbody').on('click', ".faveheart", function () {
         $(this).toggleClass("fa-solid");
-        $(this).parents('tr').toggleClass("favorited")
+        $(this).parents('tr').toggleClass("favorited");
+        rowNum = $(this).parents('tr').prop("_DT_RowIndex");
+        console.log(content.row(rowNum).data());
+        curr_data = content.row(rowNum).data();
+        curr_data["preference"] = curr_preference;
+        content.row(rowNum).data(curr_data);
+        curr_preference += 1;
     });
 } );

@@ -171,6 +171,7 @@ class TeamMatchResults(BaseModel):
     team_number: int
     team_name: str
     matches_played: int
+    preference: int
     Auton = SummaryResults()
     Tele = SummaryResults()
     total = SummaryResults()
@@ -205,7 +206,8 @@ def teamresults(key: ValidKeys) -> AllResults:
                 if r.team_number not in teamResultsDict.keys():
                     teamResultsDict[r.team_number] = TeamMatchResults(team_number=r.team_number,
                                                                     team_name=team_data_dict[r.team_number]["team_name"],
-                                                                    matches_played=team_data_dict[r.team_number]["matches_played"])
+                                                                    matches_played=team_data_dict[r.team_number]["matches_played"],
+                                                                    preference=99) # Place holder preference
                 tr = teamResultsDict[r.team_number]
                 m = getattr(tr, r.mode_name, None)
                 # Set by mode
