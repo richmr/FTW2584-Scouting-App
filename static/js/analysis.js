@@ -69,6 +69,8 @@ $(document).ready(function() {
                                 if (!this.data().favorited) {
                                     $(this.node()).hide();
                                 }
+                            // Set the ordering    
+                            dt.order([0,'asc']).draw();
                                 
                             } );
                             // $('#Results tbody tr').not(".favorited").hide();
