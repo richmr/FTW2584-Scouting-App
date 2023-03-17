@@ -142,7 +142,7 @@ def deleteteam(key: ValidKeys, team_data: JustTeamNumber):
             dbsession.commit()
         except NoResultFound:
             raise HTTPException(
-                status_code=400, detail=f"No team {team_number} exists")
+                status_code=400, detail=f"No team {team_data.team_number} exists")
         except Exception as badnews:
             raise HTTPException(status_code=500, detail=f"{badnews}")
 
