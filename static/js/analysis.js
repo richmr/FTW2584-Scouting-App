@@ -4,70 +4,11 @@ var team_results_api = `/${user_site_key}/api/team/results`
 
 var editor; // use a global for the submit and return data rendering in the examples
 var content;
+var curr_preference = 1;
 
 $(document).ready(function() {
-    
-    // editor = new $.fn.dataTable.Editor( {
-    //     ajax: {
-    //         edit: {
-    //             contentType: 'application/json',
-    //             processData: false,
-    //             data: function ( d ) {
-    //                 // I have to modify the data object delivered by datatables.
-    //                     data_obj = d["data"];
-    //                     var tosend
-    //                     for (const [key, value] of Object.entries(data_obj)) {
-    //                         tosend = value;
-    //                         tosend["matchID"] = key;
-    //                     }
-    //                     final =  JSON.stringify( tosend );
-    //                     return final
-    //                 },
-    //             url: modify_match_api,
-    //         },
-    //         create: {
-    //             contentType: 'application/json',
-    //             processData: false,
-    //             data: function ( d ) {
-    //                     data_obj = d["data"];
-    //                     var tosend
-    //                     for (const [key, value] of Object.entries(data_obj)) {
-    //                         tosend = value;
-    //                         tosend["matchID"] = key;
-    //                     }
-    //                     final =  JSON.stringify( tosend );
-    //                     return final
-    //                 },
-    //             url: add_match_api,
-    //         }, 
-    //     },
-    //     idSrc: "matchID",
-    //     table: "#Matches",
-    //     fields: [ {
-    //                         label: "Match name:",
-    //                         name: "match_name"
-    //                 }, {
-    //                         label: "Red 1:",
-    //                         name: "red_1"
-    //                 }, {
-    //                         label: "Red 2:",
-    //                         name: "red_2"
-    //                 }, {
-    //                         label: "Red 3:",
-    //                         name: "red_3"
-    //                 }, {
-    //                         label: "Blue 1:",
-    //                         name: "blue_1"
-    //                 }, {
-    //                         label: "Blue 2:",
-    //                         name: "blue_2",
-    //                 }, {
-    //                         label: "Blue 3:",
-    //                         name: "blue_3"
-    //                 }
-    //     ]
-    // } );
     content = $('#Results').DataTable( {
+        rowReorder:{ dataSrc:'preference'},
         pageLength:50,
         order: [[3, "desc"]],
         dom: "Bfrtip",
@@ -77,10 +18,19 @@ $(document).ready(function() {
             },
         responsive: true,
         columns: [
+            {
+                data: "preference",
+            },
             { 
                 data: null,
                 className: "dt-center pick-as-fave",
-                defaultContent: '<i class="faveheart fa-regular fa-heart"></i>',
+                render: function (data, type, row) {
+                    if (data.favorited) {
+                        return '<i class="faveheart fa-solid fa-heart"></i>';
+                    } else {
+                        return '<i class="faveheart fa-regular fa-heart"></i>';
+                    }
+                },
                 orderable: false,
             },
             { data: "team_number" },
@@ -115,7 +65,13 @@ $(document).ready(function() {
                     {
                         text: "Only Favorites",
                         action: function (e, dt, node, config) {
-                            $('#Results tbody tr').not(".favorited").hide();
+                            dt.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+                                if (!this.data().favorited) {
+                                    $(this.node()).hide();
+                                }
+                                
+                            } );
+                            // $('#Results tbody tr').not(".favorited").hide();
                         }
                     },
                     {
@@ -134,7 +90,19 @@ $(document).ready(function() {
     });
 
     $('#Results tbody').on('click', ".faveheart", function () {
-        $(this).toggleClass("fa-solid");
-        $(this).parents('tr').toggleClass("favorited")
+        rowNum = $(this).parents('tr').prop("_DT_RowIndex");
+        curr_data = content.row(rowNum).data();
+        if (curr_data.favorited) {
+            curr_data.favorited = false;
+            curr_data.preference = 99;
+            curr_preference -= 1;
+        } else {
+            curr_data.favorited = true;
+            curr_data.preference = curr_preference;
+            curr_preference += 1;
+        }
+        content.row(rowNum).data(curr_data);
+        
+        
     });
 } );

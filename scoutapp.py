@@ -142,7 +142,7 @@ def deleteteam(key: ValidKeys, team_data: JustTeamNumber):
             dbsession.commit()
         except NoResultFound:
             raise HTTPException(
-                status_code=400, detail=f"No team {team_number} exists")
+                status_code=400, detail=f"No team {team_data.team_number} exists")
         except Exception as badnews:
             raise HTTPException(status_code=500, detail=f"{badnews}")
 
@@ -171,6 +171,8 @@ class TeamMatchResults(BaseModel):
     team_number: int
     team_name: str
     matches_played: int
+    preference: int
+    favorited: bool
     Auton = SummaryResults()
     Tele = SummaryResults()
     total = SummaryResults()
@@ -205,7 +207,9 @@ def teamresults(key: ValidKeys) -> AllResults:
                 if r.team_number not in teamResultsDict.keys():
                     teamResultsDict[r.team_number] = TeamMatchResults(team_number=r.team_number,
                                                                     team_name=team_data_dict[r.team_number]["team_name"],
-                                                                    matches_played=team_data_dict[r.team_number]["matches_played"])
+                                                                    matches_played=team_data_dict[r.team_number]["matches_played"],
+                                                                    favorited=False,
+                                                                    preference=99) # Place holder preference
                 tr = teamResultsDict[r.team_number]
                 m = getattr(tr, r.mode_name, None)
                 # Set by mode
@@ -352,6 +356,26 @@ def modify_match(key: ValidKeys, match_data:SingleMatchData):
     return {"data":[toreturn]}
 
 # Delete Match
+@app.get("/{key}/api/match/delete")
+def delete_match(key: ValidKeys, matchID:int):
+    if key is not ValidKeys.admin:
+        raise HTTPException(
+            status_code=401, detail="Please use admin key to access this API")
+    
+    with appdata.getSQLSession() as dbsession:
+        try:
+            toreturn = {}
+            # Find the object
+            match = dbsession.query(Matches).filter_by(matchID = matchID).one()
+            # update it
+            dbsession.delete(match)
+            dbsession.commit()
+            return {"data":[toreturn]}
+        except NoResultFound:
+            raise HTTPException(status_code=400, detail=f"No match {matchID} exists")
+        except Exception as badnews:
+            raise HTTPException(status_code=500, detail=f"{badnews}")
+
 
 ## Observed Actions
 

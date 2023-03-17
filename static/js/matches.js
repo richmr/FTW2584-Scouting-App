@@ -1,6 +1,7 @@
 var all_matches_api = `/${user_site_key}/api/match/all`
 var add_match_api = `/${admin_site_key}/api/match/add`
 var modify_match_api = `/${admin_site_key}/api/match/modify`
+var delete_match_api = `/${admin_site_key}/api/match/delete`
 
 var editor; // use a global for the submit and return data rendering in the examples
  
@@ -38,6 +39,20 @@ $(document).ready(function() {
                         return final
                     },
                 url: add_match_api,
+            }, 
+            remove: {
+                contentType: 'application/json',
+                type: "GET",
+                data: function ( d ) {
+                        data_obj = d["data"];
+                        var tosend = {}
+                        for (const [key, value] of Object.entries(data_obj)) {
+                            console.log(value);
+                            tosend["matchID"] = value["matchID"];
+                        }
+                        return tosend
+                    },
+                url: delete_match_api,
             }, 
         },
         idSrc: "matchID",
@@ -93,7 +108,7 @@ $(document).ready(function() {
             buttons: [
                         { extend: "create", editor: editor },
                         { extend: "edit",   editor: editor },
-                        //{ extend: "remove", editor: editor }
+                        { extend: "remove", editor: editor }
             ]
     } );
 } );
