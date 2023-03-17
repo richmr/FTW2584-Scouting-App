@@ -23,7 +23,13 @@ $(document).ready(function() {
             { 
                 data: null,
                 className: "dt-center pick-as-fave",
-                defaultContent: '<i class="faveheart fa-regular fa-heart"></i>',
+                render: function (data, type, row) {
+                    if (data.favorited) {
+                        return '<i class="faveheart fa-solid fa-heart"></i>';
+                    } else {
+                        return '<i class="faveheart fa-regular fa-heart"></i>';
+                    }
+                },
                 orderable: false,
             },
             { data: "team_number" },
@@ -77,13 +83,19 @@ $(document).ready(function() {
     });
 
     $('#Results tbody').on('click', ".faveheart", function () {
-        $(this).toggleClass("fa-solid");
-        $(this).parents('tr').toggleClass("favorited");
         rowNum = $(this).parents('tr').prop("_DT_RowIndex");
-        console.log(content.row(rowNum).data());
         curr_data = content.row(rowNum).data();
-        curr_data["preference"] = curr_preference;
+        if (curr_data.favorited) {
+            curr_data.favorited = false;
+            curr_data.preference = 99;
+            curr_preference -= 1;
+        } else {
+            curr_data.favorited = true;
+            curr_data.preference = curr_preference;
+            curr_preference += 1;
+        }
         content.row(rowNum).data(curr_data);
-        curr_preference += 1;
+        
+        
     });
 } );

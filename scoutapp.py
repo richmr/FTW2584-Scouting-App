@@ -172,6 +172,7 @@ class TeamMatchResults(BaseModel):
     team_name: str
     matches_played: int
     preference: int
+    favorited: bool
     Auton = SummaryResults()
     Tele = SummaryResults()
     total = SummaryResults()
@@ -207,6 +208,7 @@ def teamresults(key: ValidKeys) -> AllResults:
                     teamResultsDict[r.team_number] = TeamMatchResults(team_number=r.team_number,
                                                                     team_name=team_data_dict[r.team_number]["team_name"],
                                                                     matches_played=team_data_dict[r.team_number]["matches_played"],
+                                                                    favorited=False,
                                                                     preference=99) # Place holder preference
                 tr = teamResultsDict[r.team_number]
                 m = getattr(tr, r.mode_name, None)
