@@ -119,16 +119,14 @@ def modifyteam(key: ValidKeys, team_data: TeamModel, return_key: Union[str, None
     return {"data":[toreturn]}
 
 # Delete Team
-@app.get("/{key}/api/team/delete")
-def deleteteam(key: ValidKeys, team_number: int, return_key: Union[str, None] = Query(default=None)):
-    """
-    Modifies team data in the database
-    Returns: {
-        team_number:
-        team_name:
-    }
+class JustTeamNumber(BaseModel):
+    team_number: int
 
-    Set return_key to desired value to place it in a dictionary like {return_key: data}
+@app.post("/{key}/api/team/delete")
+def deleteteam(key: ValidKeys, team_data: JustTeamNumber):
+    """
+    deletes team data in the database
+    
     """
     if key is not ValidKeys.admin:
         raise HTTPException(
@@ -138,7 +136,7 @@ def deleteteam(key: ValidKeys, team_number: int, return_key: Union[str, None] = 
         try:
             toreturn = []
             # Find the object
-            team_db = dbsession.query(Teams).filter_by(team_number=team_number).one()
+            team_db = dbsession.query(Teams).filter_by(team_number=team_data.team_number).one()
             # delete it
             dbsession.delete(team_db)
             dbsession.commit()
@@ -148,8 +146,7 @@ def deleteteam(key: ValidKeys, team_number: int, return_key: Union[str, None] = 
         except Exception as badnews:
             raise HTTPException(status_code=500, detail=f"{badnews}")
 
-    if return_key is not None:
-        toreturn = {return_key: toreturn}
+    
     return {"data":[toreturn]}
 
 # Get Team results

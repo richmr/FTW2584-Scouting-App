@@ -1,6 +1,7 @@
-var all_teams_api = `/${user_site_key}/api/team/allteams`
-var add_team_api = `/${admin_site_key}/api/team/addteam`
-var modify_team_api = `/${admin_site_key}/api/team/modify`
+var all_teams_api = `/${user_site_key}/api/team/allteams`;
+var add_team_api = `/${admin_site_key}/api/team/addteam`;
+var modify_team_api = `/${admin_site_key}/api/team/modify`;
+var delete_team_api = `/${admin_site_key}/api/team/delete`;
 
 var editor; // use a global for the submit and return data rendering in the examples
  
@@ -16,8 +17,10 @@ $(document).ready(function() {
                         data_obj = d["data"];
                         var tosend
                         for (const [key, value] of Object.entries(data_obj)) {
+                            // tosend["team_number"] = value["team_number"];
+                            // tosend["team_number"] = key;
                             tosend = value;
-                            tosend["team_number"] = key;
+                            console.log(tosend);
                         }
                         final =  JSON.stringify( tosend );
                         return final
@@ -31,13 +34,30 @@ $(document).ready(function() {
                         data_obj = d["data"];
                         var tosend
                         for (const [key, value] of Object.entries(data_obj)) {
+                            console.log(key, value);
                             tosend = value;
-                            tosend["team_number"] = key;
+                            // tosend["team_number"] = key;
                         }
                         final =  JSON.stringify( tosend );
                         return final
                     },
                 url: add_team_api,
+            }, 
+            remove: {
+                contentType: 'application/json',
+                processData: false,
+                data: function ( d ) {
+                        data_obj = d["data"];
+                        var tosend = {}
+                        for (const [key, value] of Object.entries(data_obj)) {
+                            console.log(key, value);
+                            tosend["team_number"] = value["team_number"];
+                            // tosend["team_number"] = key;
+                        }
+                        final =  JSON.stringify( tosend );
+                        return final
+                    },
+                url: delete_team_api,
             }, 
         },
         idSrc: "team_number",
@@ -72,7 +92,7 @@ $(document).ready(function() {
             buttons: [
                         { extend: "create", editor: editor },
                         { extend: "edit",   editor: editor },
-                        //{ extend: "remove", editor: editor }
+                        { extend: "remove", editor: editor }
             ]
     } );
 } );
