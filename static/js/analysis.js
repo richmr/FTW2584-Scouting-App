@@ -8,6 +8,7 @@ var curr_preference = 1;
 
 $(document).ready(function() {
     content = $('#Results').DataTable( {
+        rowReorder:{ dataSrc:'preference'},
         pageLength:50,
         order: [[3, "desc"]],
         dom: "Bfrtip",
@@ -64,7 +65,13 @@ $(document).ready(function() {
                     {
                         text: "Only Favorites",
                         action: function (e, dt, node, config) {
-                            $('#Results tbody tr').not(".favorited").hide();
+                            dt.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+                                if (!this.data().favorited) {
+                                    $(this.node()).hide();
+                                }
+                                
+                            } );
+                            // $('#Results tbody tr').not(".favorited").hide();
                         }
                     },
                     {
