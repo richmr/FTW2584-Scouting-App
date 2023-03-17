@@ -352,6 +352,26 @@ def modify_match(key: ValidKeys, match_data:SingleMatchData):
     return {"data":[toreturn]}
 
 # Delete Match
+@app.get("/{key}/api/match/delete")
+def delete_match(key: ValidKeys, matchID:int):
+    if key is not ValidKeys.admin:
+        raise HTTPException(
+            status_code=401, detail="Please use admin key to access this API")
+    
+    with appdata.getSQLSession() as dbsession:
+        try:
+            toreturn = {}
+            # Find the object
+            match = dbsession.query(Matches).filter_by(matchID = matchID).one()
+            # update it
+            dbsession.delete(match)
+            dbsession.commit()
+            return {"data":[toreturn]}
+        except NoResultFound:
+            raise HTTPException(status_code=400, detail=f"No match {matchID} exists")
+        except Exception as badnews:
+            raise HTTPException(status_code=500, detail=f"{badnews}")
+
 
 ## Observed Actions
 
