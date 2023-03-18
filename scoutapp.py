@@ -157,12 +157,15 @@ class StatSummaryTypes(str, Enum):
 class SummaryResults(BaseModel):
     scored_cone = 0
     scored_cube = 0
+    entered_charging_station = 0
+    mobility = 0
     balanced_charging_station = 0
     robot_broke = 0
 
 class AverageResults(BaseModel):
     scored_cone = 0.0
     scored_cube = 0.0
+    entered_charging_station = 0.0
     balanced_charging_station = 0.0
     robot_broke = 0.0
 
@@ -241,6 +244,7 @@ def teamresults(key: ValidKeys) -> AllResults:
             if app_mode == "test":
                 print(traceback.format_exc())
             raise HTTPException(status_code=500, detail=detail) 
+
 
 def generate_csv_header_list(in_dict:dict, lead_in="") -> list:
     toreturn = []
