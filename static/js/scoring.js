@@ -360,6 +360,17 @@ function setupRobotBrokeButton() {
     });
 }
 
+function setupMobilityButton() {
+    $("#mobility_button").click(function (e) { 
+        if ($("#mobility_button").text() == "Yes") {
+            $("#mobility_button").text("No");
+        } else {
+            $("#mobility_button").text("Yes");
+        }
+        $("#mobility_button").toggleClass("button-green");
+    });
+}
+
 // submit scoring
 function setupSubmitButton() {
     $("#submit_scoring").click(function (e) {
@@ -600,6 +611,7 @@ $(document).ready(function() {
     setupTeleopCube_mod();
     setupTeleopChargeButton();
     setupRobotBrokeButton();
+    setupMobilityButton();
     setupSubmitButton();
 
     setupModalCloseButton();
