@@ -173,13 +173,26 @@ function setupBalanceButton_scoring() {
         $(`#${current_mode}_charge_balance`).text("Yes").addClass("button-green");
         greenFeedback("#charge-balanced-background")
       })
+
+      $("#entered-charge").click(function (e) {
+        $(`#${current_mode}_entered_charge`).text("Yes").addClass("button-green");
+        greenFeedback("#entered-charge-background")
+      })
 }
 
-// robot broke
+// mobility
 function setupBrokeButton_scoring() {
     $("#robot-broke").click(function (e) {
         $(`#robot_broke_button`).text("Yes").addClass("button-red");
         greenFeedback("#robot-broke-background")
+      })
+}
+
+// robot broke
+function setupMobility_scoring() {
+    $("#mobility").click(function (e) {
+        $(`#mobility_button`).text("Yes").addClass("button-green");
+        greenFeedback("#mobility-background")
       })
 }
 ///////  Review and submit
@@ -238,6 +251,7 @@ function setupAutonCube_mod() {
     });
 }
 
+
 // auton charge button
 function setupAutonChargeButton() {
     $("#Auton_charge_balance").click(function (e) { 
@@ -247,6 +261,15 @@ function setupAutonChargeButton() {
             $("#Auton_charge_balance").text("Yes");
         }
         $("#Auton_charge_balance").toggleClass("button-green");
+    });
+
+    $("#Auton_entered_charge").click(function (e) { 
+        if ($("#Auton_entered_charge").text() == "Yes") {
+            $("#Auton_entered_charge").text("No");
+        } else {
+            $("#Auton_entered_charge").text("Yes");
+        }
+        $("#Auton_entered_charge").toggleClass("button-green");
     });
 }
 
@@ -302,6 +325,8 @@ function setupTeleopCube_mod() {
         $(scoreID).text(current_score);
     });
 }
+
+
 // teleop charge button
 function setupTeleopChargeButton() {
     $("#Teleop_charge_balance").click(function (e) { 
@@ -311,6 +336,15 @@ function setupTeleopChargeButton() {
             $("#Teleop_charge_balance").text("Yes");
         }
         $("#Teleop_charge_balance").toggleClass("button-green");
+    });
+
+    $("#Teleop_entered_charge").click(function (e) { 
+        if ($("#Teleop_entered_charge").text() == "Yes") {
+            $("#Teleop_entered_charge").text("No");
+        } else {
+            $("#Teleop_entered_charge").text("Yes");
+        }
+        $("#Teleop_entered_charge").toggleClass("button-green");
     });
 }
 
@@ -349,47 +383,86 @@ function textToCount(text_in) {
 
 function network_submit() {
     // Build the scoring messages
+    //***** label IDs are hard coded!  If you change the DB, these need to be updated. 
     list_of_scores_to_convert = [
         {
             "selector":"#Auton_cones_scored",
             "action_label":"scored_cone",
+            "actionID":10,
             "mode_name":"Auton",
+            "modeID":1,
             "count_conversion":parseInt,
         },
         {
             "selector":"#Auton_cubes_scored",
             "action_label":"scored_cube",
+            "actionID":11,
             "mode_name":"Auton",
+            "modeID":1,
             "count_conversion":parseInt,
+        },
+        {
+            "selector":"#Auton_entered_charge",
+            "action_label":"entered_charging_station",
+            "actionID":7,
+            "mode_name":"Auton",
+            "modeID":1,
+            "count_conversion":textToCount,
+        },
+        {
+            "selector":"#mobility_button",
+            "action_label":"mobility",
+            "actionID":13,
+            "mode_name":"Auton",
+            "modeID":1,
+            "count_conversion":textToCount,
         },
         {
             "selector":"#Auton_charge_balance",
             "action_label":"balanced_charging_station",
+            "actionID":8,
             "mode_name":"Auton",
+            "modeID":1,
             "count_conversion":textToCount,
         },
         {
             "selector":"#Teleop_cones_scored",
             "action_label":"scored_cone",
+            "actionID":10,
             "mode_name":"Tele",
+            "modeID":2,
             "count_conversion":parseInt,
         },
         {
             "selector":"#Teleop_cubes_scored",
             "action_label":"scored_cube",
+            "actionID":11,
             "mode_name":"Tele",
+            "modeID":2,
             "count_conversion":parseInt,
+        },
+        {
+            "selector":"#Teleop_entered_charge",
+            "action_label":"entered_charging_station",
+            "actionID":7,
+            "mode_name":"Tele",
+            "modeID":2,
+            "count_conversion":textToCount,
         },
         {
             "selector":"#Teleop_charge_balance",
             "action_label":"balanced_charging_station",
+            "actionID":8,
             "mode_name":"Tele",
+            "modeID":2,
             "count_conversion":textToCount,
         },
         {
             "selector":"#robot_broke_button",
             "action_label":"robot_broke",
+            "actionID":9,
             "mode_name":"Tele",
+            "modeID":2,
             "count_conversion":textToCount
         }
     ];
@@ -480,9 +553,12 @@ function setupModalCloseButton() {
         // Reset the tabulated scoring data
         $("#Auton_cones_scored").text(0);
         $("#Auton_cubes_scored").text(0);
+        $("#Auton_entered_charge").text("No").removeClass("button-green");
         $("#Auton_charge_balance").text("No").removeClass("button-green");
+        $("#mobility_button").text("No").removeClass("button-green");
         $("#Teleop_cones_scored").text(0);
         $("#Teleop_cubes_scored").text(0);
+        $("#Teleop_entered_charge").text("No").removeClass("button-green");
         $("#Teleop_charge_balance").text("No").removeClass("button-green");
         $("#robot_broke_button").text("No").removeClass("button-red");
         // Hide things
@@ -515,6 +591,7 @@ $(document).ready(function() {
     setupConeScore();
     setupCubeScore();
     setupBalanceButton_scoring();
+    setupMobility_scoring();
     setupBrokeButton_scoring();
     setupAutonCone_mod();
     setupAutonCube_mod();

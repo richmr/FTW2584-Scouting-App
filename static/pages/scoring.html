@@ -97,12 +97,25 @@
             </div>
             <div class="row">
                 <div class="twelve columns">
+                    <h4 class="text-center">Charge Station:</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div id="entered-charge-background" class="six columns text-center">
+                    <button id="entered-charge" class="button-primary">Attempted</button>
+                </div>
+                <div id="charge-balanced-background" class="six columns text-center">
+                    <button id="charge-balanced" class="button-primary">Balanced</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="twelve columns">
                     <h4 class="text-center">Other Events:</h4>
                 </div>
             </div>
             <div class="row">
-                <div id="charge-balanced-background" class="six columns text-center">
-                    <button id="charge-balanced" class="button-primary">Balanced Charging Station</button>
+                <div id="mobility-background" class="six columns text-center">
+                    <button id="mobility" class="button-primary">Mobility (Auton Only)</button>
                 </div>
                 <div id="robot-broke-background" class="six columns text-center">
                     <button id="robot-broke" class="button-primary">Robot Broke</button>
@@ -149,6 +162,22 @@
                 </div>
                 <div class="row">
                     <div class="six columns text-center">  
+                        <h5>Autonomous Mobility:</h5>
+                    </div>
+                    <div class="six columns text-center">
+                        <button id="mobility_button" >No</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="six columns text-center">  
+                        <h5>Attempted Autonomous Charge Station Balance:</h5>
+                    </div>
+                    <div class="six columns text-center">
+                        <button id="Auton_entered_charge" class="button">No</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="six columns text-center">  
                         <h5>Autonomous Charge Station Balance:</h5>
                     </div>
                     <div class="six columns text-center">
@@ -181,6 +210,14 @@
                     </div>
                     <div class="two columns text-center">
                         <i id="add_teleop_cube" class="fa-solid fa-circle-plus fa-2x"></i>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="six columns text-center">  
+                        <h5>Attempted Teleop Charge Station Balance:</h5>
+                    </div>
+                    <div class="six columns text-center">
+                        <button id="Teleop_entered_charge" >No</button>
                     </div>
                 </div>
                 <div class="row">
