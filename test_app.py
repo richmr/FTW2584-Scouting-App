@@ -1,5 +1,4 @@
 import unittest
-from tabulate import tabulate
 from pprint import pprint
 import os
 
@@ -148,7 +147,6 @@ class TestDataLoad(unittest.TestCase):
                 for field in headers:
                     thisdata.append(getattr(row, field))
                 datalist.append(thisdata)
-            print(tabulate(datalist, headers=headers, tablefmt="github"))
             self.assertTrue(True)
             
     def test_7_team_game_actions(self):
