@@ -473,7 +473,24 @@ def addmanyactions(key:ValidKeys, actions: ScoredActions):
                 print(traceback.format_exc())
             raise HTTPException(status_code=500, detail=f"{badnews}")
     
+@app.get("/{key}/api/scores/getall")
+def getallscores(key:ValidKeys):
+    with appdata.getSQLSession() as dbsession:
+        # Get all the matches since I can't figure out joins tonight
+        stmt = select(Matches.matchID, Matches.match_name)
+        res = dbsession.execute(stmt)
+        matches = {r.matchID:r.match_name for r in res}
+        stmt = select(Observed_Actions.team_number, Observed_Actions.matchID).distinct(Observed_Actions.team_number, Observed_Actions.matchID)
+        res = dbsession.execute(stmt)
+        toreturn = [{"rowID":f"{r.team_number}_{r.matchID}", "team_number":r.team_number, "matchID":r.matchID, "match_name":matches[r.matchID]} for r in res]
+        return {"data":toreturn}
 
-# Modify action
+@app.get("/{key}/api/scores/delete")
+def delete_score(key:ValidKeys, team_number:int, matchID:int):
+    with appdata.getSQLSession() as dbsession:
+        res = dbsession.query(Observed_Actions).filter_by(team_number=team_number, matchID=matchID)
+        for r in res:
+            dbsession.delete(r)
+        dbsession.commit()
+    return []
 
-# Delete action
